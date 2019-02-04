@@ -1,21 +1,21 @@
 class TimeEntry(object):
     @classmethod
-    def add(cls, *entries):
-        total = 0
+    def get_hours_total(cls, entries):
+        hours_total = 0
         for entry in entries:
-            total += entry.hours
-        return total
+            hours_total += entry.hours
+        return hours_total
 
     @classmethod
-    def get_uninvoiced(cls, *entries):
+    def get_uninvoiced(cls, entries):
         _entries = []
         for entry in entries:
-            if entry.invoiced is False and entry.billable is True:
+            if entry.can_be_invoiced():
                 _entries.append(entry)
         return _entries
 
     @classmethod
-    def query(cls, entries, company=None):
+    def query(cls, entries, company, job=None):
         _entries = []
         for entry in entries:
             if company and entry.company == company:
@@ -30,6 +30,9 @@ class TimeEntry(object):
         self.invoiced = False
         self.company = company
         self.job = job
+
+    def can_be_invoiced(self):
+        return self.billable and not self.invoiced
 
     def  __repr__(self):
         return 'TimeEntry(%s, %s, %s, %s, %s, %s)' % (
