@@ -5,7 +5,7 @@ from invoice import Invoice
 from time_entry import TimeEntry
 
 
-class TestTimeEntry(unittest.TestCase):
+class BaseClass(unittest.TestCase):
     def setUp(self):
         self.entry1 = TimeEntry(1.0, datetime.datetime(2019,2,1),
                                 'Made an entry', 'Company1', 'Job1')
@@ -20,7 +20,8 @@ class TestTimeEntry(unittest.TestCase):
         self.now = datetime.datetime.now()
         self.net_30 = self.now + datetime.timedelta(days=30)
         self.net_45 = self.now + datetime.timedelta(days=45)
-        
+
+class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
         self.assertEqual(self.entry1.hours, 1.0)
         self.assertEqual(self.entry1.dt, datetime.datetime(2019,2,1))
@@ -40,6 +41,17 @@ class TestTimeEntry(unittest.TestCase):
         uninvoiced_entries = TimeEntry.get_uninvoiced([self.entry1, self.entry2, self.entry3])
         self.assertEqual(uninvoiced_entries, [self.entry1])
 
+    def testFilterEntries(self):
+        filtered_entries = TimeEntry.query(self.entries, company='Company1')
+        self.assertEqual(filtered_entries, [self.entry1, self.entry2])
+
+    def testParseEntryNotes(self):
+        note_txt = """1,02/01/19,"Made an entry",Company1,Job1
+2,2/2/19,Made another entry,Company1,Job2"""
+        entries = TimeEntry.parse_note(note_txt)
+        self.assertEqual(entries, [self.entry1, self.entry2])
+
+class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
@@ -64,12 +76,12 @@ class TestTimeEntry(unittest.TestCase):
     def testPrintInvoice(self):
         printed_invoice = """Company1
 Job1:
-F 02/01/19: 1
+Fr 02/01/19: 1
 ----
 total: 1
 
 Job2:
-S 02/02/19: 2
+Sa 02/02/19: 2
 ----
 total: 2
 
@@ -78,11 +90,5 @@ total: 2
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
         invoice.send()
-        print repr(invoice.print_txt())
-        print repr(printed_invoice)
         self.assertEqual(invoice.print_txt(), printed_invoice)
-
-    def testFilterEntries(self):
-        filtered_entries = TimeEntry.query(self.entries, company='Company1')
-        self.assertEqual(filtered_entries, [self.entry1, self.entry2])
 

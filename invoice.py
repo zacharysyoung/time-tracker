@@ -31,9 +31,9 @@ class Invoice(object):
             print_str += job + ':\n'
             for entry in self.jobs[job]:
                 dt = entry.dt
-                print_str += '%s: %d\n' % (dt.strftime('%a')[0] + ' ' + dt.strftime('%m/%d/%y'), entry.hours)
+                print_str += '{}: {:.4g}\n'.format(dt.strftime('%a')[:2] + ' ' + dt.strftime('%m/%d/%y'), entry.hours)
             print_str += '----\n'
-            print_str += 'total: %d\n\n' % TimeEntry.get_hours_total(self.jobs[job])
+            print_str += 'total: {:.5g}\n\n'.format(TimeEntry.get_hours_total(self.jobs[job]))
 
         return print_str
 

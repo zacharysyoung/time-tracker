@@ -15,6 +15,55 @@ class TimeEntry(object):
         return _entries
 
     @classmethod
+    def parse_note(cls, note_data):
+        def _assert_field_count(row, field_count):
+            assert len(row) == field_count, \
+                'Expected %s field(s) in row, got %d: %s' % (field_count, len(row), row)
+
+        def cast_date(s):
+            if not s:
+                return None
+
+            mo, day, yr = map(int, s.split('/'))
+            return datetime.datetime(2000 + yr, mo, day)
+
+
+        def cast_float(s):
+            if not s:
+                return None
+            return float(s)
+
+
+        def cast_int(s):
+            if not s:
+                return None
+            return int(s)
+
+
+        def _unicode(s):
+            if not s:
+                return None
+
+            return unicode(s, 'utf-8')
+
+        import csv
+        import datetime
+        import StringIO
+
+        reader = csv.reader(StringIO.StringIO(note_data), delimiter=',', quotechar='"')
+        entries = []
+        for row in reader:
+            entries.append(TimeEntry(
+                cast_float(row[0]),
+                cast_date(row[1]),
+                _unicode(row[2]),
+                _unicode(row[3]),
+                _unicode(row[4])
+            )
+            )
+        return entries
+
+    @classmethod
     def query(cls, entries, company, job=None):
         _entries = []
         for entry in entries:
@@ -31,6 +80,15 @@ class TimeEntry(object):
         self.company = company
         self.job = job
 
+    def __eq__(self, other):
+        return self.hours == other.hours and \
+               self.dt == other.dt and \
+               self.message == other.message and \
+               self.billable == other.billable and \
+               self.invoiced == other.invoiced and \
+               self.company == other.company and \
+               self.job == other.job
+
     def can_be_invoiced(self):
         return self.billable and not self.invoiced
 
@@ -43,4 +101,4 @@ class TimeEntry(object):
             self.job,
             self.billable
         )
-    
+
