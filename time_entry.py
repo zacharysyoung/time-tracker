@@ -50,9 +50,12 @@ class TimeEntry(object):
         import datetime
         import StringIO
 
-        reader = csv.reader(StringIO.StringIO(note_data), delimiter=',', quotechar='"')
+        reader = csv.reader(note_data, delimiter=',', quotechar='"')
         entries = []
         for row in reader:
+            if not row:
+                continue
+
             entries.append(TimeEntry(
                 cast_float(row[0]),
                 cast_date(row[1]),

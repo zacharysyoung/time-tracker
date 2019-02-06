@@ -1,5 +1,6 @@
 import datetime
 import unittest
+import StringIO
 
 from invoice import Invoice
 from time_entry import TimeEntry
@@ -48,8 +49,19 @@ class TestTimeEntries(BaseClass):
     def testParseEntryNotes(self):
         note_txt = """1,02/01/19,"Made an entry",Company1,Job1
 2,2/2/19,Made another entry,Company1,Job2"""
-        entries = TimeEntry.parse_note(note_txt)
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
         self.assertEqual(entries, [self.entry1, self.entry2])
+
+        # Test with extra newlines
+        note_txt = """7,1/31/19,shingled;trimmed custom flashing,cch,lasor
+6,2/1/19,shingled,cch,lasor
+5,2/2/19,shingled,cch,lasor
+.5,2/5/19,delivered flashing,cch,LaSorella
+3.5,2/5/19,installed floor sheathing in loft; tidied,cch,McElhose
+
+
+"""
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
 
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
