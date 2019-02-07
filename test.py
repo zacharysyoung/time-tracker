@@ -2,6 +2,7 @@ import datetime
 import unittest
 import StringIO
 
+from job_config import JobConfig
 from invoice import Invoice
 from time_entry import TimeEntry
 
@@ -104,3 +105,14 @@ total: 2
         invoice.send()
         self.assertEqual(invoice.print_txt(), printed_invoice)
 
+class TestJobConfig(unittest.TestCase):
+    def testCreateConfig(self):
+        config_txt = """[cch]
+lasor: LaSorella
+mcel: McElhose
+"""
+        config = JobConfig(StringIO.StringIO(config_txt), 'cch')
+        self.assertEqual(config.get_id_by_name('LaSorella'), 'lasor')
+        self.assertEqual(config.get_name_by_id('lasor'), 'LaSorella')
+        self.assertEqual(config.get_id_by_name('McElhose'), 'mcel')
+        self.assertEqual(config.get_name_by_id('mcel'), 'McElhose')
