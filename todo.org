@@ -3,3 +3,10 @@
    This should open note.txt, parse it, and print out an invoice
 ** DONE Normalize jobs on parsing
    Mcelhose --> mcel, McElhose --> mcel
+** TODO Add total to printed invoice for my own expectations of $$
+** TODO Save invoiced entries to separate file
+   Original note.txt could be modified, but this may be unnecessary
+** TODO Add next_paydate() function to invoice
+   Returns dt for next payday, has to know some previous payday to
+   calculate every second week, or maybe just `if now::week_num % 2`
+   because we started invoicing at the end of week 1 in the new year.
