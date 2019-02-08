@@ -53,17 +53,6 @@ class TestTimeEntries(BaseClass):
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
         self.assertEqual(entries, [self.entry1, self.entry2])
 
-        # Test with extra newlines
-        note_txt = """7,1/31/19,shingled;trimmed custom flashing,cch,lasor
-6,2/1/19,shingled,cch,lasor
-5,2/2/19,shingled,cch,lasor
-.5,2/5/19,delivered flashing,cch,LaSorella
-3.5,2/5/19,installed floor sheathing in loft; tidied,cch,McElhose
-
-
-"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
-
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')

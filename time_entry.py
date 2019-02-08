@@ -48,7 +48,6 @@ class TimeEntry(object):
 
         import csv
         import datetime
-        import StringIO
 
         reader = csv.reader(note_data, delimiter=',', quotechar='"')
         entries = []
