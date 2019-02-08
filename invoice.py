@@ -32,11 +32,13 @@ class Invoice(object):
             print_str += config.get_name_by_id(job_id) + ':\n'
             entries = self.job_ids[job_id]
             for entry in entries:
+                # like, Fr 02/01/19: 1.5
                 dt = entry.dt
-                print_str += '{}: {:.4g}\n'.format(dt.strftime('%a')[:2] + ' ' + dt.strftime('%m/%d/%y'), entry.hours)
+                day_date = '{} {}'.format(
+                    dt.strftime('%a')[:2], dt.strftime('%m/%d/%y')
+                )
+                print_str += '{}: {:.4g}\n'.format(day_date, entry.hours)
             print_str += '----\n'
-            print_str += 'total: {:.5g}\n\n'.format(TimeEntry.get_hours_total(entries))
-
             total = TimeEntry.get_hours_total(entries)
             print_str += 'total: {:.5g}\n\n'.format(total)
 
