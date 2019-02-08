@@ -1,9 +1,12 @@
+
 * Tasks
 ** DONE Create utility for printing my invoices based on note.txt
    This should open note.txt, parse it, and print out an invoice
 ** DONE Normalize jobs on parsing
    Mcelhose --> mcel, McElhose --> mcel
 ** TODO Add total to printed invoice for my own expectations of $$
+*** DONE Add grand total hours
+*** TODO Add wage to config to compute gross pay
 ** TODO Save invoiced entries to separate file
    Original note.txt could be modified, but this may be unnecessary
 ** TODO Add next_paydate() function to invoice

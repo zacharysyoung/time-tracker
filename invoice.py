@@ -27,6 +27,7 @@ class Invoice(object):
 
     def print_txt(self, config):
         print_str = self.company + '\n'
+        grand_total = 0
         for job_id in sorted(self.job_ids.keys()):
             print_str += config.get_name_by_id(job_id) + ':\n'
             entries = self.job_ids[job_id]
@@ -36,6 +37,13 @@ class Invoice(object):
             print_str += '----\n'
             print_str += 'total: {:.5g}\n\n'.format(TimeEntry.get_hours_total(entries))
 
+            total = TimeEntry.get_hours_total(entries)
+            print_str += 'total: {:.5g}\n\n'.format(total)
+
+            grand_total += total
+
+        print_str += '----\n'
+        print_str += 'total: {:.5g}\n\n'.format(grand_total)
         return print_str
 
     def send(self):

@@ -102,6 +102,9 @@ Sa 02/02/19: 2
 ----
 total: 2
 
+----
+total: 3
+
 """
 
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
@@ -160,6 +163,9 @@ Job Two:
 Sa 02/02/19: 2
 ----
 total: 2
+
+----
+total: 3
 
 """
 
