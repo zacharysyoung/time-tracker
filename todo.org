@@ -1,6 +1,5 @@
 * Tasks
 ** TODO Create utility for printing my invoices based on note.txt
-   This should open and parse note.txt, skipping any entries where an
-   'x' is the last cell
-** TODO Normalize jobs on parsing
+   This should open note.txt, parse it, and print out an invoice
+** DONE Normalize jobs on parsing
    Mcelhose --> mcel, McElhose --> mcel
