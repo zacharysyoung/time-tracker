@@ -96,12 +96,26 @@ total: 2
 
 class TestJobConfig(unittest.TestCase):
     def testCreateConfig(self):
-        config_txt = """[cch]
-lasor: LaSorella
-mcel: McElhose
+        config_txt = """[Company1]
+job1: Job One
+job2: Job Two
 """
-        config = JobConfig(StringIO.StringIO(config_txt), 'cch')
-        self.assertEqual(config.get_id_by_name('LaSorella'), 'lasor')
-        self.assertEqual(config.get_name_by_id('lasor'), 'LaSorella')
-        self.assertEqual(config.get_id_by_name('McElhose'), 'mcel')
-        self.assertEqual(config.get_name_by_id('mcel'), 'McElhose')
+
+        config = JobConfig(StringIO.StringIO(config_txt), 'Company1')
+
+        # Test simple id <--> name
+        self.assertEqual(config.get_id_by_name('Job One'), 'job1')
+        self.assertEqual(config.get_name_by_id('job1'), 'Job One')
+        self.assertEqual(config.get_id_by_name('Job Two'), 'job2')
+        self.assertEqual(config.get_name_by_id('job2'), 'Job Two')
+
+        # Test normalization
+        self.assertEqual(config.get_id_by_name('job one'), 'job1')
+        self.assertEqual(config.get_id_by_name('JoB One'), 'job1')
+        self.assertEqual(config.get_id_by_name('JOB ONE'), 'job1')
+
+        # id is not normalized
+        self.assertIsNone(config.get_name_by_id('JOB1'))
+
+        # Check for bogus name
+        self.assertIsNone(config.get_id_by_name('Job 1'))
