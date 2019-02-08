@@ -136,3 +136,40 @@ job2: Job Two
 
         # Check for bogus name
         self.assertIsNone(config.get_id_by_name('Job 1'))
+
+
+class TestGenInvoiceTask(unittest.TestCase):
+    def testTaskWithMockData(self):
+        import gen_invoice_task
+
+        config_txt = """[Company1]
+job1: Job One
+job2: Job Two
+"""
+
+        note_txt = """1,02/01/19,"Made an entry",Company1,Job One
+2,2/2/19,Made another entry,Company1,Job Two"""
+
+        invoice_txt = """Company1
+Job One:
+Fr 02/01/19: 1
+----
+total: 1
+
+Job Two:
+Sa 02/02/19: 2
+----
+total: 2
+
+"""
+
+        gen_invoice_txt = gen_invoice_task.gen_invoice_task(
+            'Company1',
+            StringIO.StringIO(config_txt),
+            StringIO.StringIO(note_txt)
+        )
+        self.assertEqual(gen_invoice_txt, invoice_txt)
+
+    def testTaskWithRealData(self):
+        import gen_invoice_task
+        gen_invoice_task.main(print_txt=False)
