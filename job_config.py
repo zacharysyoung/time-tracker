@@ -8,15 +8,15 @@ class JobConfig(object):
 
         self.jobs = {}
         for job_id, job_name in config.items(company):
-            self.jobs[job_name] = job_id
+            self.jobs[job_name.lower()] = job_id
             self.jobs[job_id] = job_name
 
 
     def get_id_by_name(self, _name):
-        return self.jobs[_name]
+        return self.jobs.get(_name.lower())
 
     def get_name_by_id(self, _id):
-        return self.jobs[_id]
+        return self.jobs.get(_id)
 
     @classmethod
     def get_jobs_from_ini(cls, ini_data=None):
