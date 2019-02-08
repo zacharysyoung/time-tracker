@@ -29,7 +29,7 @@ class TestTimeEntries(BaseClass):
         self.assertEqual(self.entry1.dt, datetime.datetime(2019,2,1))
         self.assertEqual(self.entry1.message, 'Made an entry')
 
-    def testAddEntries(self):
+    def testSumEntryHours(self):
         self.assertEqual(TimeEntry.get_hours_total([self.entry1, self.entry2]), 3.0)
         self.assertEqual(TimeEntry.get_hours_total([self.entry1, self.entry2, self.entry3]), 5.5)
         self.assertEqual(TimeEntry.get_hours_total(self.entries), 8.5)
