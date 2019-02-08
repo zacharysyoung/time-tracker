@@ -10,13 +10,13 @@ from time_entry import TimeEntry
 class BaseClass(unittest.TestCase):
     def setUp(self):
         self.entry1 = TimeEntry(1.0, datetime.datetime(2019,2,1),
-                                'Made an entry', 'Company1', 'Job1')
+                                'Made an entry', 'Company1', 'Job One')
         self.entry2 = TimeEntry(2.0, datetime.datetime(2019,2,2),
-                                'Made another entry', 'Company1', 'Job2')
+                                'Made another entry', 'Company1', 'Job Two')
         self.entry3 = TimeEntry(2.5, datetime.datetime(2019,2,3),
-                                'Made 3rd entry', 'Company2', 'Job1', billable=False)
+                                'Made 3rd entry', 'Company2', 'Job One', billable=False)
         self.entry4 = TimeEntry(3, datetime.datetime(2019,2,4),
-                                'Made 4th entry', 'Company2', 'Job2')
+                                'Made 4th entry', 'Company2', 'Job Two')
         self.entries = [self.entry1, self.entry2, self.entry3, self.entry4]
 
         self.now = datetime.datetime.now()
@@ -48,8 +48,8 @@ class TestTimeEntries(BaseClass):
         self.assertEqual(filtered_entries, [self.entry1, self.entry2])
 
     def testParseEntryNotes(self):
-        note_txt = """1,02/01/19,"Made an entry",Company1,Job1
-2,2/2/19,Made another entry,Company1,Job2"""
+        note_txt = """1,02/01/19,"Made an entry",Company1,Job One
+2,2/2/19,Made another entry,Company1,Job Two"""
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
         self.assertEqual(entries, [self.entry1, self.entry2])
 
@@ -77,12 +77,12 @@ class TestInvoicing(BaseClass):
 
     def testPrintInvoice(self):
         printed_invoice = """Company1
-Job1:
+Job One:
 Fr 02/01/19: 1
 ----
 total: 1
 
-Job2:
+Job Two:
 Sa 02/02/19: 2
 ----
 total: 2
