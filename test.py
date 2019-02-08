@@ -10,18 +10,24 @@ from time_entry import TimeEntry
 class BaseClass(unittest.TestCase):
     def setUp(self):
         self.entry1 = TimeEntry(1.0, datetime.datetime(2019,2,1),
-                                'Made an entry', 'Company1', 'Job One')
+                                'Made an entry', 'Company1', 'job1')
         self.entry2 = TimeEntry(2.0, datetime.datetime(2019,2,2),
-                                'Made another entry', 'Company1', 'Job Two')
+                                'Made another entry', 'Company1', 'job2')
         self.entry3 = TimeEntry(2.5, datetime.datetime(2019,2,3),
-                                'Made 3rd entry', 'Company2', 'Job One', billable=False)
+                                'Made 3rd entry', 'Company2', 'job2', billable=False)
         self.entry4 = TimeEntry(3, datetime.datetime(2019,2,4),
-                                'Made 4th entry', 'Company2', 'Job Two')
+                                'Made 4th entry', 'Company2', 'job2')
         self.entries = [self.entry1, self.entry2, self.entry3, self.entry4]
 
         self.now = datetime.datetime.now()
         self.net_30 = self.now + datetime.timedelta(days=30)
         self.net_45 = self.now + datetime.timedelta(days=45)
+
+        config_txt = """[Company1]
+job1: Job One
+job2: Job Two
+"""
+        self.config_company1 = JobConfig(StringIO.StringIO(config_txt), 'Company1')
 
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
@@ -47,11 +53,20 @@ class TestTimeEntries(BaseClass):
         filtered_entries = TimeEntry.query(self.entries, company='Company1')
         self.assertEqual(filtered_entries, [self.entry1, self.entry2])
 
-    def testParseEntryNotes(self):
+    def testParseEntryNotesSimple(self):
         note_txt = """1,02/01/19,"Made an entry",Company1,Job One
 2,2/2/19,Made another entry,Company1,Job Two"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt))
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.config_company1)
         self.assertEqual(entries, [self.entry1, self.entry2])
+
+    def testParseEntryNotesWithJobMappings(self):
+        # Test job1 --> Job One, and Job two --> Job Two
+        note_txt = """1,02/01/19,"Made an entry",Company1,job1
+2,2/2/19,Made another entry,Company1,Job two"""
+
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.config_company1)
+        self.assertEqual(entries, [self.entry1, self.entry2])
+
 
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
@@ -92,7 +107,9 @@ total: 2
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
         invoice.send()
-        self.assertEqual(invoice.print_txt(), printed_invoice)
+        self.assertEqual(
+            invoice.print_txt(self.config_company1),
+            printed_invoice)
 
 class TestJobConfig(unittest.TestCase):
     def testCreateConfig(self):

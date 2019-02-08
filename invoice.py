@@ -14,9 +14,9 @@ class Invoice(object):
                 del(entries[i])
 
         self.entries = sorted(entries, key=lambda x: x.dt)
-        self.jobs = defaultdict(list)
+        self.job_ids = defaultdict(list)
         for entry in self.entries:
-            self.jobs[entry.job].append(entry)
+            self.job_ids[entry.job].append(entry)
 
         self.scheduled_payment_date = payment_date
         self.hours_total  = TimeEntry.get_hours_total(self.entries)
@@ -25,15 +25,16 @@ class Invoice(object):
         self.datetime_paid = None
         self.sent = False
 
-    def print_txt(self):
+    def print_txt(self, config):
         print_str = self.company + '\n'
-        for job in sorted(self.jobs.keys()):
-            print_str += job + ':\n'
-            for entry in self.jobs[job]:
+        for job_id in sorted(self.job_ids.keys()):
+            print_str += config.get_name_by_id(job_id) + ':\n'
+            entries = self.job_ids[job_id]
+            for entry in entries:
                 dt = entry.dt
                 print_str += '{}: {:.4g}\n'.format(dt.strftime('%a')[:2] + ' ' + dt.strftime('%m/%d/%y'), entry.hours)
             print_str += '----\n'
-            print_str += 'total: {:.5g}\n\n'.format(TimeEntry.get_hours_total(self.jobs[job]))
+            print_str += 'total: {:.5g}\n\n'.format(TimeEntry.get_hours_total(entries))
 
         return print_str
 

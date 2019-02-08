@@ -15,7 +15,7 @@ class TimeEntry(object):
         return _entries
 
     @classmethod
-    def parse_note(cls, note_data):
+    def parse_note(cls, note_data, config):
         def _assert_field_count(row, field_count):
             assert len(row) == field_count, \
                 'Expected %s field(s) in row, got %d: %s' % (field_count, len(row), row)
@@ -46,6 +46,23 @@ class TimeEntry(object):
 
             return unicode(s, 'utf-8')
 
+        def _job_id(s):
+            if not s:
+                return None
+
+            id_or_name = _unicode(s)
+
+            # Use value as id for name, and return id
+            if config.get_name_by_id(id_or_name):
+                return id_or_name
+
+            # Use value as name for id
+            job_id = config.get_id_by_name(id_or_name)
+            if job_id:
+                return job_id
+
+            return None
+
         import csv
         import datetime
 
@@ -60,7 +77,7 @@ class TimeEntry(object):
                 cast_date(row[1]),
                 _unicode(row[2]),
                 _unicode(row[3]),
-                _unicode(row[4])
+                _job_id(row[4])
             )
             )
         return entries
