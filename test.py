@@ -23,11 +23,8 @@ class BaseClass(unittest.TestCase):
         self.net_30 = self.now + datetime.timedelta(days=30)
         self.net_45 = self.now + datetime.timedelta(days=45)
 
-        config_txt = """[Company1]
-job1: Job One
-job2: Job Two
-"""
-        self.config_company1 = JobConfig(StringIO.StringIO(config_txt), 'Company1')
+        self.company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
+        self.company1_job_config = JobConfig(self.company1_jobs_dict, 'Company1')
 
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
@@ -56,7 +53,7 @@ class TestTimeEntries(BaseClass):
     def testParseEntryNotesSimple(self):
         note_txt = """1,02/01/19,"Made an entry",Company1,Job One
 2,2/2/19,Made another entry,Company1,Job Two"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.config_company1)
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_job_config)
         self.assertEqual(entries, [self.entry1, self.entry2])
 
     def testParseEntryNotesWithJobMappings(self):
@@ -64,7 +61,7 @@ class TestTimeEntries(BaseClass):
         note_txt = """1,02/01/19,"Made an entry",Company1,job1
 2,2/2/19,Made another entry,Company1,Job two"""
 
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.config_company1)
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_job_config)
         self.assertEqual(entries, [self.entry1, self.entry2])
 
 
@@ -104,7 +101,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 """
 
         entries = TimeEntry.parse_note(
-            StringIO.StringIO(note_txt), self.config_company1
+            StringIO.StringIO(note_txt), self.company1_job_config
         )
         filtered_entries = TimeEntry.query(entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
@@ -138,7 +135,7 @@ total: 3
         invoice = Invoice(filtered_entries, self.net_30)
         invoice.send()
         self.assertEqual(
-            invoice.print_txt(self.config_company1),
+            invoice.print_txt(self.company1_job_config),
             printed_invoice)
 
     def testWriteInvoice(self):
@@ -177,8 +174,8 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 ----
 """
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
-                                                         self.config_company1)
-        invoice = Invoice(entries, self.net_30, self.config_company1)
+                                                         self.company1_job_config)
+        invoice = Invoice(entries, self.net_30, self.company1_job_config)
         invoice.send()
         
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -198,12 +195,11 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
         
 class TestJobConfig(unittest.TestCase):
     def testCreateConfig(self):
-        config_txt = """[Company1]
-job1: Job One
-job2: Job Two
-"""
-
-        config = JobConfig(StringIO.StringIO(config_txt), 'Company1')
+        company1_jobs_dict = {
+            'job1': 'Job One',
+            'job2': 'Job Two'
+        }
+        config = JobConfig(company1_jobs_dict, 'Company1')
 
         # Test simple id <--> name
         self.assertEqual(config.get_id_by_name('Job One'), 'job1')
@@ -226,11 +222,7 @@ job2: Job Two
 class TestGenInvoiceTask(unittest.TestCase):
     def testTaskWithMockData(self):
         import gen_invoice_task
-
-        config_txt = """[Company1]
-job1: Job One
-job2: Job Two
-"""
+        company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
 
         note_txt = """1,02/01/19,"Made an entry",Company1,Job One
 2,2/2/19,Made another entry,Company1,Job Two"""
@@ -253,7 +245,7 @@ total: 3
 
         invoice = gen_invoice_task.gen_invoice_task(
             'Company1',
-            StringIO.StringIO(config_txt),
+            company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )
         self.assertEqual(invoice.print_txt(), invoice_txt)

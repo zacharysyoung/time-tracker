@@ -1,13 +1,8 @@
-import ConfigParser
-
-
 class JobConfig(object):
-    def __init__(self, config_data, company):
-        config = ConfigParser.ConfigParser()
-        config.readfp(config_data)
+    def __init__(self, jobs_dict, company):
 
         self.jobs = {}
-        for job_id, job_name in config.items(company):
+        for job_id, job_name in jobs_dict.items():
             self.jobs[job_name.lower()] = job_id
             self.jobs[job_id] = job_name
 
