@@ -1,0 +1,17 @@
+cch
+LaSorella:
+Th 01/31/19: 7
+Fr 02/01/19: 6
+Sa 02/02/19: 5
+----
+total: 18
+
+----
+total: 18
+
+| 7 | 01/31/19 | shingled;trimmed custom flashing | cch | lasor |
+| 6 | 02/01/19 | shingled | cch | lasor |
+| 5 | 02/02/19 | shingled | cch | lasor |
+
+Total: 18.0 | Invoiced: 2019-02-04 04:23:00 | Payment due: 2019-02-04 | Paid: 2019-02-07 | Deposited:
+----
