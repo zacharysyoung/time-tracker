@@ -251,16 +251,12 @@ total: 3
 
 """
 
-        gen_invoice_txt = gen_invoice_task.gen_invoice_task(
+        invoice = gen_invoice_task.gen_invoice_task(
             'Company1',
             StringIO.StringIO(config_txt),
             StringIO.StringIO(note_txt)
         )
-        self.assertEqual(gen_invoice_txt, invoice_txt)
-
-    def testTaskWithRealData(self):
-        import gen_invoice_task
-        gen_invoice_task.main(print_txt=False)
+        self.assertEqual(invoice.print_txt(), invoice_txt)
 
 
 class TestFileOperations(unittest.TestCase):

@@ -6,7 +6,7 @@
 ** TODO Add total to printed invoice for my own expectations of $$
 *** DONE Add grand total hours
 *** TODO Add wage to config to compute gross pay
-** TODO Save invoiced entries to separate file
+** DONE Save invoiced entries to separate file
    Write invoice and invoiced entries to an invoice file
 ** TODO Add next_paydate() function to invoice
    Returns dt for next payday, has to know some previous payday to
