@@ -5,7 +5,7 @@ from collections import defaultdict
 from time_entry import TimeEntry
 
 class Invoice(object):
-    def __init__(self, entries, payment_date):
+    def __init__(self, entries, payment_date, config=None):
         for i in range(len(entries) - 1, -1, -1):
             if i > 0 and entries[i].company != entries[i - 1].company:
                 raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, entries[i - 1].company))
@@ -25,7 +25,13 @@ class Invoice(object):
         self.datetime_paid = None
         self.sent = False
 
-    def print_txt(self, config):
+        self.config = config
+
+    def print_txt(self, config=None):
+
+        if not config:
+            config = self.config
+
         print_str = self.company + '\n'
         grand_total = 0
         for job_id in sorted(self.job_ids.keys()):
@@ -55,3 +61,23 @@ class Invoice(object):
             entry.datetime_invoiced = now
         self.datetime_invoiced = now
         self.sent = True
+
+    def print_entries(self):
+        print_str = ''
+        for entry in self.entries:
+            print_str += str(entry) + '\n'
+
+        total = TimeEntry.get_hours_total(self.entries)
+        invoiced = self.datetime_invoiced
+        payment_due = self.scheduled_payment_date
+
+        print_str += '\nTotal: {} | Invoiced: {} | Payment due: {}'.format(
+            total, invoiced, payment_due
+            )
+        print_str += '\n----\n'
+        return print_str
+
+    def write_file(self, path, mode='w+b'):
+        with open(path, mode) as f:
+            f.write(self.print_txt())
+            f.write(self.print_entries())

@@ -121,3 +121,11 @@ class TimeEntry(object):
             self.billable
         )
 
+    def __str__(self):
+        return '| ' + ' | '.join([
+            '%g' % self.hours,
+            self.dt.strftime('%m/%d/%y'),
+            self.message,
+            self.company,
+            self.job
+        ]) + ' |'

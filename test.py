@@ -90,6 +90,33 @@ class TestInvoicing(BaseClass):
             self.assertEqual(entry.datetime_invoiced, invoiced_dt)
         self.assertEqual(TimeEntry.get_uninvoiced(invoice.entries), [])
 
+    def tesPrintInvoicedEntries(self):
+        note_txt = """1,2/1/19,"Made an entry",Company1,job1
+3.5,2/3/19,Last entry,Company1,Job One
+2,2/2/19,Made another entry,Company1,Job two
+"""
+        invoiced_entries_txt = """| 1 | 02/01/19 | Made an entry | Company1 | job1 |
+| 2 | 02/02/19 | Made another entry | Company1 | job2 |
+| 3.5 | 02/03/19 | Last entry | Company1 | job1 |
+
+Total: 6.5 | Invoiced: {} | Payment due: {}
+----
+"""
+
+        entries = TimeEntry.parse_note(
+            StringIO.StringIO(note_txt), self.config_company1
+        )
+        filtered_entries = TimeEntry.query(entries, 'Company1')
+        invoice = Invoice(filtered_entries, self.net_30)
+        invoice.send()
+
+        invoiced_entries_txt = invoiced_entries_txt.format(
+            invoice.datetime_invoiced,
+            invoice.scheduled_payment_date
+        )
+        
+        self.assertEqual(invoice.print_entries(), invoiced_entries_txt)
+
     def testPrintInvoice(self):
         printed_invoice = """Company1
 Job One:
@@ -114,6 +141,61 @@ total: 3
             invoice.print_txt(self.config_company1),
             printed_invoice)
 
+    def testWriteInvoice(self):
+        import tempfile
+
+        import file_util
+
+        note_txt = """1,2/1/19,"Made an entry",Company1,job1
+3.5,2/3/19,Last entry,Company1,Job One
+2,2/2/19,Made another entry,Company1,Job two
+"""
+
+        printed_invoice = """Company1
+Job One:
+Fr 02/01/19: 1
+Su 02/03/19: 3.5
+----
+total: 4.5
+
+Job Two:
+Sa 02/02/19: 2
+----
+total: 2
+
+----
+total: 6.5
+
+"""
+
+
+        invoiced_entries_txt = """| 1 | 02/01/19 | Made an entry | Company1 | job1 |
+| 2 | 02/02/19 | Made another entry | Company1 | job2 |
+| 3.5 | 02/03/19 | Last entry | Company1 | job1 |
+
+Total: 6.5 | Invoiced: {} | Payment due: {}
+----
+"""
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
+                                                         self.config_company1)
+        invoice = Invoice(entries, self.net_30, self.config_company1)
+        invoice.send()
+        
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmppath = tmpfile.name
+        tmpfile.close()
+        invoice.write_file(tmppath)
+
+        written_txt = printed_invoice + invoiced_entries_txt.format(
+            invoice.datetime_invoiced,
+            invoice.scheduled_payment_date
+        )
+
+
+        with open(tmppath, 'r') as f:
+            self.assertEqual(written_txt, f.read())
+        file_util.del_path(tmppath)
+        
 class TestJobConfig(unittest.TestCase):
     def testCreateConfig(self):
         config_txt = """[Company1]
@@ -179,3 +261,50 @@ total: 3
     def testTaskWithRealData(self):
         import gen_invoice_task
         gen_invoice_task.main(print_txt=False)
+
+
+class TestFileOperations(unittest.TestCase):
+    def testAppendFile(self):
+        import os
+        import tempfile
+
+        import file_util
+
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmpfile.close()
+
+        tmpname = tmpfile.name
+
+        with open(tmpname, 'w+b') as f:
+            f.write('Old Line\n')
+
+        file_util.append_file_with_data(tmpname, 'New Line\n')
+
+        with open(tmpname, 'r+b') as f:
+            self.assertEqual(f.read(), 'Old Line\nNew Line\n')
+
+        file_util.del_path(tmpname)
+
+
+    def testDeletePath(self):
+        import os
+        import tempfile
+
+        import file_util
+
+        # Test invalid deletes after system deletes file on f.close()
+        f = tempfile.NamedTemporaryFile(delete=True)
+        f.close()
+        invalid_path = f.name
+        with self.assertRaises(OSError):
+            file_util.del_path(invalid_path)
+
+        self.assertIsNone(file_util.del_path(invalid_path, ignore_error=2))
+        
+        # Test real delete; system does not delete on close: delete=False
+        f = tempfile.NamedTemporaryFile(delete=False)
+        f.close()
+        self.assertTrue(os.path.exists(f.name))
+        file_util.del_path(f.name)
+        self.assertFalse(os.path.exists(f.name))
+        
