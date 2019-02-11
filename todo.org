@@ -1,3 +1,5 @@
+#+OPTIONS: ^:nil
+
 * Tasks
 ** DONE Create utility for printing my invoices based on note.txt
    This should open note.txt, parse it, and print out an invoice
