@@ -1,4 +1,3 @@
-
 * Tasks
 ** DONE Create utility for printing my invoices based on note.txt
    This should open note.txt, parse it, and print out an invoice
@@ -8,7 +7,7 @@
 *** DONE Add grand total hours
 *** TODO Add wage to config to compute gross pay
 ** TODO Save invoiced entries to separate file
-   Original note.txt could be modified, but this may be unnecessary
+   Write invoice and invoiced entries to an invoice file
 ** TODO Add next_paydate() function to invoice
    Returns dt for next payday, has to know some previous payday to
    calculate every second week, or maybe just `if now::week_num % 2`
