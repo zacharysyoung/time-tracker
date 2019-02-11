@@ -1,0 +1,21 @@
+cch
+LaSorella:
+Tu 02/05/19: 0.5
+----
+total: 0.5
+
+McElhose:
+Tu 02/05/19: 3.5
+Th 02/07/19: 3
+----
+total: 6.5
+
+----
+total: 7
+
+| 0.5 | 02/05/19 | delivered flashing | cch | lasor |
+| 3.5 | 02/05/19 | installed floor sheathing in loft; tidied | cch | mcel |
+| 3 | 02/07/19 | Helped set and secure beams above bridgeway | cch | mcel |
+
+Total: 7.0 | Invoiced: None | Payment due: 2019-02-18 00:00:00
+----

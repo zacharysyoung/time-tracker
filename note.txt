@@ -1,3 +1,4 @@
-7,1/31/19,shingled;trimmed custom flashing,cch,lasor
-6,2/1/19,shingled,cch,lasor
-5,2/2/19,shingled,cch,lasor
+.5,2/5/19,delivered flashing,cch,LaSorella
+3.5,2/5/19,installed floor sheathing in loft; tidied,cch,McElhose
+5.5,2/6/19,”installed some small wall sheathing panels; listened in on bridge beam considerations, then fucked off;set posts and headers for pocket doors”,cch,McElhose 
+3,2/7/19,Helped set and secure beams above bridgeway,cch,McElhose
