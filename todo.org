@@ -14,9 +14,12 @@
    Returns dt for next payday, has to know some previous payday to
    calculate every second week, or maybe just `if now::week_num % 2`
    because we started invoicing at the end of week 1 in the new year.
-** Make config have nothing to do with IO
+** DONE Make config have nothing to do with IO
    Right now it's written around ConfigParser which is disk-specific
    IO. I think it can be rewritten around a dictionary; and so the
    caller picks their data layer and passes it off as a dictionary.
    For now, tests and generating invoices for Ken and FF, the data
    layer will be disk.
+** TODO Make invoice for Ken, on 02/12/19
+   Invoice will be for last week (few hours) and this week (zero
+   hours), pay period is 2/4 - 2/17
