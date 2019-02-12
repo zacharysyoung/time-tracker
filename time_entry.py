@@ -15,7 +15,7 @@ class TimeEntry(object):
         return _entries
 
     @classmethod
-    def parse_note(cls, note_data, config):
+    def parse_note(cls, note_data, jobs):
         def _assert_field_count(row, field_count):
             assert len(row) == field_count, \
                 'Expected %s field(s) in row, got %d: %s' % (field_count, len(row), row)
@@ -53,11 +53,11 @@ class TimeEntry(object):
             id_or_name = _unicode(s)
 
             # Use value as id for name, and return id
-            if config.get_name_by_id(id_or_name):
+            if jobs.get_name_by_id(id_or_name):
                 return id_or_name
 
             # Use value as name for id
-            job_id = config.get_id_by_name(id_or_name)
+            job_id = jobs.get_id_by_name(id_or_name)
             if job_id:
                 return job_id
 

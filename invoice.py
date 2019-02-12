@@ -5,7 +5,7 @@ from collections import defaultdict
 from time_entry import TimeEntry
 
 class Invoice(object):
-    def __init__(self, entries, payment_date, config=None):
+    def __init__(self, entries, payment_date, jobs=None):
         for i in range(len(entries) - 1, -1, -1):
             if i > 0 and entries[i].company != entries[i - 1].company:
                 raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, entries[i - 1].company))
@@ -25,17 +25,17 @@ class Invoice(object):
         self.datetime_paid = None
         self.sent = False
 
-        self.config = config
+        self.jobs = jobs
 
-    def print_txt(self, config=None):
+    def print_txt(self, jobs=None):
 
-        if not config:
-            config = self.config
+        if not jobs:
+            jobs = self.jobs
 
         print_str = self.company + '\n'
         grand_total = 0
         for job_id in sorted(self.job_ids.keys()):
-            print_str += config.get_name_by_id(job_id) + ':\n'
+            print_str += jobs.get_name_by_id(job_id) + ':\n'
             entries = self.job_ids[job_id]
             for entry in entries:
                 # like, Fr 02/01/19: 1.5

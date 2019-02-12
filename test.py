@@ -2,7 +2,7 @@ import datetime
 import unittest
 import StringIO
 
-from job_config import JobConfig
+from company_jobs import CompanyJobs
 from invoice import Invoice
 from time_entry import TimeEntry
 
@@ -24,7 +24,7 @@ class BaseClass(unittest.TestCase):
         self.net_45 = self.now + datetime.timedelta(days=45)
 
         self.company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
-        self.company1_job_config = JobConfig(self.company1_jobs_dict, 'Company1')
+        self.company1_jobs = CompanyJobs('Company1', self.company1_jobs_dict)
 
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
@@ -53,7 +53,7 @@ class TestTimeEntries(BaseClass):
     def testParseEntryNotesSimple(self):
         note_txt = """1,02/01/19,"Made an entry",Company1,Job One
 2,2/2/19,Made another entry,Company1,Job Two"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_job_config)
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
         self.assertEqual(entries, [self.entry1, self.entry2])
 
     def testParseEntryNotesWithJobMappings(self):
@@ -61,7 +61,7 @@ class TestTimeEntries(BaseClass):
         note_txt = """1,02/01/19,"Made an entry",Company1,job1
 2,2/2/19,Made another entry,Company1,Job two"""
 
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_job_config)
+        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
         self.assertEqual(entries, [self.entry1, self.entry2])
 
 
@@ -101,7 +101,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 """
 
         entries = TimeEntry.parse_note(
-            StringIO.StringIO(note_txt), self.company1_job_config
+            StringIO.StringIO(note_txt), self.company1_jobs
         )
         filtered_entries = TimeEntry.query(entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
@@ -135,7 +135,7 @@ total: 3
         invoice = Invoice(filtered_entries, self.net_30)
         invoice.send()
         self.assertEqual(
-            invoice.print_txt(self.company1_job_config),
+            invoice.print_txt(self.company1_jobs),
             printed_invoice)
 
     def testWriteInvoice(self):
@@ -174,8 +174,8 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 ----
 """
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
-                                                         self.company1_job_config)
-        invoice = Invoice(entries, self.net_30, self.company1_job_config)
+                                                         self.company1_jobs)
+        invoice = Invoice(entries, self.net_30, self.company1_jobs)
         invoice.send()
         
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -193,30 +193,30 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
             self.assertEqual(written_txt, f.read())
         file_util.del_path(tmppath)
         
-class TestJobConfig(unittest.TestCase):
-    def testCreateConfig(self):
+class TestCompanyJobs(unittest.TestCase):
+    def testCompanyJobs(self):
         company1_jobs_dict = {
             'job1': 'Job One',
             'job2': 'Job Two'
         }
-        config = JobConfig(company1_jobs_dict, 'Company1')
+        jobs = CompanyJobs('Company1', company1_jobs_dict)
 
         # Test simple id <--> name
-        self.assertEqual(config.get_id_by_name('Job One'), 'job1')
-        self.assertEqual(config.get_name_by_id('job1'), 'Job One')
-        self.assertEqual(config.get_id_by_name('Job Two'), 'job2')
-        self.assertEqual(config.get_name_by_id('job2'), 'Job Two')
+        self.assertEqual(jobs.get_id_by_name('Job One'), 'job1')
+        self.assertEqual(jobs.get_name_by_id('job1'), 'Job One')
+        self.assertEqual(jobs.get_id_by_name('Job Two'), 'job2')
+        self.assertEqual(jobs.get_name_by_id('job2'), 'Job Two')
 
         # Test normalization
-        self.assertEqual(config.get_id_by_name('job one'), 'job1')
-        self.assertEqual(config.get_id_by_name('JoB One'), 'job1')
-        self.assertEqual(config.get_id_by_name('JOB ONE'), 'job1')
+        self.assertEqual(jobs.get_id_by_name('job one'), 'job1')
+        self.assertEqual(jobs.get_id_by_name('JoB One'), 'job1')
+        self.assertEqual(jobs.get_id_by_name('JOB ONE'), 'job1')
 
         # id is not normalized
-        self.assertIsNone(config.get_name_by_id('JOB1'))
+        self.assertIsNone(jobs.get_name_by_id('JOB1'))
 
         # Check for bogus name
-        self.assertIsNone(config.get_id_by_name('Job 1'))
+        self.assertIsNone(jobs.get_id_by_name('Job 1'))
 
 
 class TestGenInvoiceTask(unittest.TestCase):

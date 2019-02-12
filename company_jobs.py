@@ -1,5 +1,5 @@
-class JobConfig(object):
-    def __init__(self, jobs_dict, company):
+class CompanyJobs(object):
+    def __init__(self, company, jobs_dict):
 
         self.jobs = {}
         for job_id, job_name in jobs_dict.items():
