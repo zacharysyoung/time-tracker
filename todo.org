@@ -55,4 +55,10 @@
       note
    5. sync phone
    6. text Ken
-
+** TODO Fix self-referential asserts in testWriteInvoice()
+   There are self-referential asserts in =testWriteInvoice()= that don't
+   really prove anything.  This became apparent when changing =self.net_30=
+   to =None= in all the =Invoice()= instantiators.
+** TODO Re-evaluate tests for payment_date in Invoice
+   Just changed all net_30 date-times to None, and no tests broke.
+   Make tests break, then fix the code.

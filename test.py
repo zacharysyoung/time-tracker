@@ -68,11 +68,11 @@ class TestTimeEntries(BaseClass):
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None))
         self.assertEqual(invoice.hours_total, 3)
 
         filtered_entries = TimeEntry.query(self.entries, 'Company2')
-        invoice = Invoice(filtered_entries, self.net_30, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None))
         self.assertEqual(invoice.hours_total, 3)
 
     def testInvoicePayperiod(self):
@@ -91,7 +91,7 @@ class TestInvoicing(BaseClass):
 
     def testSendInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None))
 
         now = datetime.datetime.now()
         invoice.send()
@@ -122,7 +122,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
             StringIO.StringIO(note_txt), self.company1_jobs
         )
         filtered_entries = TimeEntry.query(entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None))
 
         invoice.send()
 
@@ -150,7 +150,7 @@ total: 3
 """
 
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None))
         invoice.send()
         self.assertEqual(
             invoice.print_txt(self.company1_jobs),
@@ -193,7 +193,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 """
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
                                                          self.company1_jobs)
-        invoice = Invoice(entries, self.net_30, (None, None), self.company1_jobs)
+        invoice = Invoice(entries, None, (None, None), self.company1_jobs)
         invoice.send()
         
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -201,6 +201,8 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
         tmpfile.close()
         invoice.write_file(tmppath)
 
+        # Still verifying an instance against itself and not a
+        # specific, known, correct value
         written_txt = printed_invoice + invoiced_entries_txt.format(
             invoice.datetime_invoiced,
             invoice.scheduled_payment_date
