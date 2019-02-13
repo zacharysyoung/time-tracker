@@ -8,6 +8,11 @@
 ** TODO Add total to printed invoice for my own expectations of $$
 *** DONE Add grand total hours
 *** TODO Add wage to config to compute gross pay
+*** TODO Add different pay periods per Company
+    Finney Farm's invoice was named with the 2-week convention that
+    works for Ken's invoicing.  Maybe call this 'invoicingperiod'.
+    "every 2 weeks starting on Monday"
+
 ** DONE Save invoiced entries to separate file
    Write invoice and invoiced entries to an invoice file
 ** TODO Add next_paydate() function to invoice
@@ -49,7 +54,4 @@
       note
    5. sync phone
    6. text Ken
-** TODO Add different pay periods per Company
-   Finney Farm's invoice was named with the 2-week convention that
-   works for Ken's invoicing.  Maybe call this 'invoicingperiod'.
 
