@@ -20,7 +20,7 @@
    caller picks their data layer and passes it off as a dictionary.
    For now, tests and generating invoices for Ken and FF, the data
    layer will be disk.
-** TODO Make invoice for Ken, on 02/12/19
+** DONE Make invoice for Ken, on 02/12/19
    Invoice will be for last week (few hours) and this week (zero
    hours), pay period is 2/4 - 2/17
 ** TODO The use of invoice.send() doesen't really matter
