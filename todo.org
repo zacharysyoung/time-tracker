@@ -35,3 +35,21 @@
    but why not just use a real parent-child relation with formal ids?
    And this all seems premature anyways.  Maybe I don't care enough
    about send() to justify its existence, yet.
+
+   I found a use for it, it sets the invoiced_datetime property on the
+   invoice, which is used by print_txt().
+
+   But I'm still not sure how I even "send" an invoice, beyond the
+   mechanical steps of:
+   1. sync phone
+   2. copy hour entries from Notes app into notes.txt
+   3. run gen_invoice_task, I can specify a variabe in the file to
+      select which company to invoice for
+   4. copy-paste line-items from invoice txt file to another Notes app
+      note
+   5. sync phone
+   6. text Ken
+** TODO Add different pay periods per Company
+   Finney Farm's invoice was named with the 2-week convention that
+   works for Ken's invoicing.  Maybe call this 'invoicingperiod'.
+
