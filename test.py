@@ -86,15 +86,19 @@ class TestInvoicing(BaseClass):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
 
+        now = datetime.datetime.now()
         invoice.send()
+
+        self.assertGreater(invoice.datetime_invoiced, now)
         self.assertTrue(invoice.sent)
+
         invoiced_dt = invoice.datetime_invoiced
         for entry in invoice.entries:
             self.assertFalse(entry.can_be_invoiced())
             self.assertEqual(entry.datetime_invoiced, invoiced_dt)
         self.assertEqual(TimeEntry.get_uninvoiced(invoice.entries), [])
 
-    def tesPrintInvoicedEntries(self):
+    def testPrintInvoicedEntries(self):
         note_txt = """1,2/1/19,"Made an entry",Company1,job1
 3.5,2/3/19,Last entry,Company1,Job One
 2,2/2/19,Made another entry,Company1,Job two
@@ -112,13 +116,13 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
         )
         filtered_entries = TimeEntry.query(entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
+
         invoice.send()
 
         invoiced_entries_txt = invoiced_entries_txt.format(
             invoice.datetime_invoiced,
             invoice.scheduled_payment_date
         )
-        
         self.assertEqual(invoice.print_entries(), invoiced_entries_txt)
 
     def testPrintInvoice(self):
