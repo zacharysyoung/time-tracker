@@ -23,3 +23,14 @@
 ** TODO Make invoice for Ken, on 02/12/19
    Invoice will be for last week (few hours) and this week (zero
    hours), pay period is 2/4 - 2/17
+** TODO The use of invoice.send() doesen't really matter
+   A few tests called send(), but commenting those calls out didn't
+   affect the outcome of the test.  I was thinking each entry could
+   just record some maybe interesting information about its parent
+   invoice, while really trying to defer on making an entry point back
+   to its invoice, something like Entry --> Invoice.  Right now its
+   only Invoice --> [Entry, Entry, ...].  I was also thinking that an
+   invoice's ID could be computed from the interesting information,
+   but why not just use a real parent-child relation with formal ids?
+   And this all seems premature anyways.  Maybe I don't care enough
+   about send() to justify its existence, yet.
