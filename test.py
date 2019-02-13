@@ -68,23 +68,30 @@ class TestTimeEntries(BaseClass):
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30)
+        invoice = Invoice(filtered_entries, self.net_30, (None, None))
         self.assertEqual(invoice.hours_total, 3)
 
         filtered_entries = TimeEntry.query(self.entries, 'Company2')
-        invoice = Invoice(filtered_entries, self.net_30)
+        invoice = Invoice(filtered_entries, self.net_30, (None, None))
         self.assertEqual(invoice.hours_total, 3)
 
     def testInvoicePayperiod(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, datetime.datetime(2019,2,18))
+        invoice = Invoice(filtered_entries, datetime.datetime(2019,2,18),
+                          (datetime.datetime(2019,2,4), datetime.datetime(2019,2,17)))
 
         self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,4))
         self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,17))
-        
+
+        filtered_entries = TimeEntry.query(self.entries, 'Company2')
+        invoice = Invoice(filtered_entries, None,
+                          (datetime.datetime(2019,2,1), datetime.datetime(2019,2,28)))
+        self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,1))
+        self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,28))
+
     def testSendInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30)
+        invoice = Invoice(filtered_entries, self.net_30, (None, None))
 
         now = datetime.datetime.now()
         invoice.send()
@@ -115,7 +122,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
             StringIO.StringIO(note_txt), self.company1_jobs
         )
         filtered_entries = TimeEntry.query(entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30)
+        invoice = Invoice(filtered_entries, self.net_30, (None, None))
 
         invoice.send()
 
@@ -143,7 +150,7 @@ total: 3
 """
 
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, self.net_30)
+        invoice = Invoice(filtered_entries, self.net_30, (None, None))
         invoice.send()
         self.assertEqual(
             invoice.print_txt(self.company1_jobs),
@@ -186,7 +193,7 @@ Total: 6.5 | Invoiced: {} | Payment due: {}
 """
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
                                                          self.company1_jobs)
-        invoice = Invoice(entries, self.net_30, self.company1_jobs)
+        invoice = Invoice(entries, self.net_30, (None, None), self.company1_jobs)
         invoice.send()
         
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -255,7 +262,8 @@ total: 3
 """
 
         invoice = gen_invoice_task.gen_invoice_task(
-            ('Company1', datetime.datetime(2019,2,18,17,0)),
+            ('Company1', datetime.datetime(2019,2,18,17,0),
+             (datetime.datetime(2019,2,3), datetime.datetime(2019,2,17))),
             company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )

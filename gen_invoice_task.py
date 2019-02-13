@@ -7,8 +7,10 @@ from company_jobs import CompanyJobs
 from invoice import Invoice
 from time_entry import TimeEntry
 
-ff = ('ff', datetime.datetime(2019,2,28, 17, 0))
-cch = ('cch', datetime.datetime(2019,3,4, 17, 0))
+_dt = datetime.datetime
+
+ff = ('ff', _dt(2019,3,1, 17, 0), (_dt(2019,2,1), _dt(2019,2,28)))
+cch = ('cch', _dt(2019,3,4, 17, 0), (_dt(2019,2,18), _dt(2019,3,3)))
 
 def main(company, print_txt=True):
     config = ConfigParser.ConfigParser()
@@ -30,9 +32,10 @@ def gen_invoice_task(company, jobs_dict, note_data):
         invoice = Invoice(
             entries,
             company[1],
+            company[2],
             jobs=jobs)
 
         return invoice
 
 if __name__ == '__main__':
-    main(cch)
+    main(ff)

@@ -5,7 +5,7 @@ from collections import defaultdict
 from time_entry import TimeEntry
 
 class Invoice(object):
-    def __init__(self, entries, payment_date, jobs=None):
+    def __init__(self, entries, payment_date, pay_period, jobs=None):
         for i in range(len(entries) - 1, -1, -1):
             if i > 0 and entries[i].company != entries[i - 1].company:
                 raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, entries[i - 1].company))
@@ -25,8 +25,8 @@ class Invoice(object):
         self.datetime_paid = None
         self.sent = False
 
-        self.payperiod_start = self.scheduled_payment_date - datetime.timedelta(days=14)
-        self.payperiod_end = self.scheduled_payment_date - datetime.timedelta(days=1)
+        self.payperiod_start = pay_period[0]
+        self.payperiod_end = pay_period[1]
         self.jobs = jobs
 
     def print_txt(self, jobs=None):
