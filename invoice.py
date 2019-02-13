@@ -25,6 +25,8 @@ class Invoice(object):
         self.datetime_paid = None
         self.sent = False
 
+        self.payperiod_start = self.scheduled_payment_date - datetime.timedelta(days=14)
+        self.payperiod_end = self.scheduled_payment_date - datetime.timedelta(days=1)
         self.jobs = jobs
 
     def print_txt(self, jobs=None):

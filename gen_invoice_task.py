@@ -15,7 +15,9 @@ def main(print_txt=True):
     note_data = open('note.txt', 'r')
     invoice = gen_invoice_task(company, jobs_dict, note_data)
     invoice.send()
-    invoice.write_file('cch_invoice.txt')    
+
+    fname = 'invoices/{:%Y%m%d}_{:%Y%m%d}_{}.txt'.format(invoice.payperiod_start, invoice.payperiod_end, company)
+    invoice.write_file(fname)    
 
 def gen_invoice_task(company, jobs_dict, note_data):
         jobs = CompanyJobs(company, jobs_dict)

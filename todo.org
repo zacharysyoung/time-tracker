@@ -23,6 +23,7 @@
 ** DONE Make invoice for Ken, on 02/12/19
    Invoice will be for last week (few hours) and this week (zero
    hours), pay period is 2/4 - 2/17
+** DONE gen_invoice_task should create a pay-period specific file
 ** TODO The use of invoice.send() doesen't really matter
    A few tests called send(), but commenting those calls out didn't
    affect the outcome of the test.  I was thinking each entry could

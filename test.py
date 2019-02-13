@@ -75,6 +75,13 @@ class TestInvoicing(BaseClass):
         invoice = Invoice(filtered_entries, self.net_30)
         self.assertEqual(invoice.hours_total, 3)
 
+    def testInvoicePayperiod(self):
+        filtered_entries = TimeEntry.query(self.entries, 'Company1')
+        invoice = Invoice(filtered_entries, datetime.datetime(2019,2,18))
+
+        self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,4))
+        self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,17))
+        
     def testSendInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, self.net_30)
