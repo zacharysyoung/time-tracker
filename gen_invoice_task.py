@@ -14,6 +14,7 @@ def main(print_txt=True):
     jobs_dict = dict(config.items(company))
     note_data = open('note.txt', 'r')
     invoice = gen_invoice_task(company, jobs_dict, note_data)
+    invoice.send()
     invoice.write_file('cch_invoice.txt')    
 
 def gen_invoice_task(company, jobs_dict, note_data):
@@ -24,7 +25,7 @@ def gen_invoice_task(company, jobs_dict, note_data):
 
         invoice = Invoice(
             entries,
-            datetime.datetime(2019,2,18),
+            datetime.datetime(2019,2,18, 17, 0),
             jobs=jobs)
 
         return invoice

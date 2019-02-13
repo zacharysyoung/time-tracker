@@ -17,5 +17,5 @@ total: 7
 | 3.5 | 02/05/19 | installed floor sheathing in loft; tidied | cch | mcel |
 | 3 | 02/07/19 | Helped set and secure beams above bridgeway | cch | mcel |
 
-Total: 7.0 | Invoiced: None | Payment due: 2019-02-18 00:00:00
+Total: 7.0 | Invoiced: 2019-02-12 17:33:55.167338 | Payment due: 2019-02-18 17:00:00
 ----
