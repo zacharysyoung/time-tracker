@@ -26,10 +26,10 @@ class BaseClass(unittest.TestCase):
         ]
 
         self.company1_jobs_dict = {job1: 'Job One', job2: 'Job Two'}
-        self.company1_jobs = CompanyJobs(comp1, self.company1_jobs_dict)
+        self.company1_jobs = CompanyJobs(comp1, self.company1_jobs_dict, 20)
 
         self.company2_jobs_dict = {job3: 'Job Three', job4: 'Job Four'}
-        self.company2_jobs = CompanyJobs(comp2, self.company2_jobs_dict)
+        self.company2_jobs = CompanyJobs(comp2, self.company2_jobs_dict, 20)
         
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
@@ -89,7 +89,7 @@ class TestTimeEntries(BaseClass):
                 entry
                 )
 
-        jobs = CompanyJobs('Company1', {'job1': 'Job One', 'job2': 'Job Two'})
+        jobs = CompanyJobs('Company1', {'job1': 'Job One', 'job2': 'Job Two'}, 20)
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
 
         # test m/d/yy
@@ -174,7 +174,7 @@ class TestInvoicing(BaseClass):
 | 2 | 01/02/10 | 2nd entry | Company1 | job1 |
 | 3 | 01/03/10 | 3rd entry | Company1 | job1 |
 
-Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00
+Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00 | Gross $: 120
 ----
 """.format(invoice.invoiced_dt)
         
@@ -244,8 +244,10 @@ class TestCompanyJobs(unittest.TestCase):
             'job1': 'Job One',
             'job2': 'Job Two'
         }
-        jobs = CompanyJobs('Company1', company1_jobs_dict)
+        jobs = CompanyJobs('Company1', company1_jobs_dict, 20)
 
+        self.assertEqual(jobs.wage, 20)
+        
         # Test simple id <--> name
         self.assertEqual(jobs.get_id_by_name('Job One'), 'job1')
         self.assertEqual(jobs.get_name_by_id('job1'), 'Job One')
@@ -290,7 +292,7 @@ total: 3
 
         invoice = gen_invoice_task.gen_invoice_task(
             ('Company1', _dt(2019,2,18,17,0),
-             (_dt(2019,2,3), _dt(2019,2,17))),
+             (_dt(2019,2,3), _dt(2019,2,17)), 20),
             company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )

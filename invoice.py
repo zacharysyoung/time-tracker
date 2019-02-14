@@ -71,9 +71,10 @@ class Invoice(object):
         total = TimeEntry.get_hours_total(self.entries)
         invoiced = self.invoiced_dt
         payment_due = self.payment_dt
+        gross_pay = total * self.jobs.wage
 
-        print_str += '\nTotal: {} | Invoiced: {} | Payment due: {}'.format(
-            total, invoiced, payment_due
+        print_str += '\nTotal: {} | Invoiced: {} | Payment due: {} | Gross $: {}'.format(
+            total, invoiced, payment_due, gross_pay
             )
         print_str += '\n----\n'
         return print_str

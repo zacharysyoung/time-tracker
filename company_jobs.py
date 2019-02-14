@@ -1,10 +1,11 @@
 class CompanyJobs(object):
-    def __init__(self, company, jobs_dict):
+    def __init__(self, company, jobs_dict, wage):
         self.company = company
         self.jobs = {}
         for job_id, job_name in jobs_dict.items():
             self.jobs[job_name.lower()] = job_id
             self.jobs[job_id] = job_name
+        self.wage = wage
 
 
     def get_id_by_name(self, _name):
