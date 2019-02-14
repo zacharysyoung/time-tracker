@@ -57,11 +57,14 @@ class Invoice(object):
 
     def send(self):
         now = datetime.datetime.now()
+        total = 0
         for entry in self.entries:
             entry.invoiced = True
             entry.invoiced_dt = now
+            total += entry.hours
         self.invoiced_dt = now
         self.sent = True
+        self.total_hours = total
 
     def print_entries(self):
         print_str = ''
