@@ -6,6 +6,7 @@ from company_jobs import CompanyJobs
 from invoice import Invoice
 from time_entry import TimeEntry
 
+_dt = datetime.datetime
 
 class BaseClass(unittest.TestCase):
     def setUp(self):
@@ -90,48 +91,54 @@ class TestInvoicing(BaseClass):
         self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,28))
 
     def testSendInvoice(self):
+        """Asserting the datetime_invoiced value is weird, like what am I
+           trying to prove?  So far, it's only use is being printed in
+           text; of interest for future record keeping?  I don't
+           really have a personal need for send(), so it's just this
+           kinda-academic thing I thought an invoice should have.  And
+           I think that uncertainty shows in this lame test.
+
+        """
+        
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
         invoice = Invoice(filtered_entries, None, (None, None))
 
-        now = datetime.datetime.now()
+        send_start = _dt.now()
         invoice.send()
+        send_end = _dt.now()
 
-        self.assertGreater(invoice.datetime_invoiced, now)
-        self.assertTrue(invoice.sent)
+        self.assertLess(send_start, invoice.datetime_invoiced)
+        self.assertGreater(send_end, invoice.datetime_invoiced)
 
-        invoiced_dt = invoice.datetime_invoiced
         for entry in invoice.entries:
             self.assertFalse(entry.can_be_invoiced())
-            self.assertEqual(entry.datetime_invoiced, invoiced_dt)
+            self.assertEqual(entry.datetime_invoiced, invoice.datetime_invoiced)
+
+        self.assertTrue(invoice.sent)
         self.assertEqual(TimeEntry.get_uninvoiced(invoice.entries), [])
 
     def testPrintInvoicedEntries(self):
-        note_txt = """1,2/1/19,"Made an entry",Company1,job1
-3.5,2/3/19,Last entry,Company1,Job One
-2,2/2/19,Made another entry,Company1,Job two
-"""
-        invoiced_entries_txt = """| 1 | 02/01/19 | Made an entry | Company1 | job1 |
-| 2 | 02/02/19 | Made another entry | Company1 | job2 |
-| 3.5 | 02/03/19 | Last entry | Company1 | job1 |
-
-Total: 6.5 | Invoiced: {} | Payment due: {}
-----
-"""
-
-        entries = TimeEntry.parse_note(
-            StringIO.StringIO(note_txt), self.company1_jobs
-        )
-        filtered_entries = TimeEntry.query(entries, 'Company1')
-        invoice = Invoice(filtered_entries, None, (None, None))
-
+        entries = [
+            TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
+            TimeEntry(2, _dt(2010,1,2), '2nd entry', 'Company1', 'job1'),
+            TimeEntry(3, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
+            ]
+        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None))
         invoice.send()
 
-        invoiced_entries_txt = invoiced_entries_txt.format(
-            invoice.datetime_invoiced,
-            invoice.scheduled_payment_date
-        )
-        self.assertEqual(invoice.print_entries(), invoiced_entries_txt)
+        printed_txt = """| 1 | 01/01/10 | 1st entry | Company1 | job1 |
+| 2 | 01/02/10 | 2nd entry | Company1 | job1 |
+| 3 | 01/03/10 | 3rd entry | Company1 | job1 |
 
+Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00
+----
+""".format(invoice.datetime_invoiced)
+        
+        self.assertEqual(
+            invoice.print_entries().splitlines(),
+            printed_txt.strip().splitlines()
+        )
+    
     def testPrintInvoice(self):
         printed_invoice = """Company1
 Job One:
@@ -153,64 +160,38 @@ total: 3
         invoice = Invoice(filtered_entries, None, (None, None))
         invoice.send()
         self.assertEqual(
-            invoice.print_txt(self.company1_jobs),
-            printed_invoice)
+            invoice.print_txt(self.company1_jobs).splitlines(),
+            printed_invoice.splitlines())
 
     def testWriteInvoice(self):
         import tempfile
-
         import file_util
 
-        note_txt = """1,2/1/19,"Made an entry",Company1,job1
-3.5,2/3/19,Last entry,Company1,Job One
-2,2/2/19,Made another entry,Company1,Job two
-"""
-
-        printed_invoice = """Company1
-Job One:
-Fr 02/01/19: 1
-Su 02/03/19: 3.5
-----
-total: 4.5
-
-Job Two:
-Sa 02/02/19: 2
-----
-total: 2
-
-----
-total: 6.5
-
-"""
-
-
-        invoiced_entries_txt = """| 1 | 02/01/19 | Made an entry | Company1 | job1 |
-| 2 | 02/02/19 | Made another entry | Company1 | job2 |
-| 3.5 | 02/03/19 | Last entry | Company1 | job1 |
-
-Total: 6.5 | Invoiced: {} | Payment due: {}
-----
-"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt),
-                                                         self.company1_jobs)
-        invoice = Invoice(entries, None, (None, None), self.company1_jobs)
+        comp1_entries = TimeEntry.query(self.entries, 'Company1')
+        invoice = Invoice(comp1_entries, None, (None, None), self.company1_jobs)
         invoice.send()
-        
+
+        # open named-temp file to get its path
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmppath = tmpfile.name
+
+        # close...
         tmpfile.close()
+
+        # so other processes can open it
         invoice.write_file(tmppath)
 
-        # Still verifying an instance against itself and not a
-        # specific, known, correct value
-        written_txt = printed_invoice + invoiced_entries_txt.format(
-            invoice.datetime_invoiced,
-            invoice.scheduled_payment_date
-        )
+        entries_str = ''
+        for entry in comp1_entries:
+            entries_str += str(entry) + '\n'
 
-
+        # Assert file was written and contains some basic values
         with open(tmppath, 'r') as f:
-            self.assertEqual(written_txt, f.read())
+            written_txt =  f.read()
+            self.assertIn(comp1_entries[0].message, written_txt)
+            self.assertIn(
+                str(TimeEntry.get_hours_total(comp1_entries)), written_txt)
+
         file_util.del_path(tmppath)
         
 class TestCompanyJobs(unittest.TestCase):
