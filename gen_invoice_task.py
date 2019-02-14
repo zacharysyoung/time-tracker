@@ -24,7 +24,7 @@ def main(company, print_txt=True):
     invoice.write_file(fname)    
 
 def gen_invoice_task(company, jobs_dict, note_data):
-        jobs = CompanyJobs(company, jobs_dict)
+        jobs = CompanyJobs(company[0], jobs_dict)
 
         entries = TimeEntry.parse_note(note_data, jobs)
         entries = TimeEntry.query(entries, company[0])
@@ -33,7 +33,7 @@ def gen_invoice_task(company, jobs_dict, note_data):
             entries,
             company[1],
             company[2],
-            jobs=jobs)
+            jobs)
 
         return invoice
 

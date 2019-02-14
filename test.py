@@ -14,18 +14,23 @@ class BaseClass(unittest.TestCase):
         comp2 = 'Company2'
         job1 = 'job1'
         job2 = 'job2'
+        job3 = 'job3'
+        job4 = 'job4'
 
         _te = TimeEntry
         self.entries = [
             _te(1.0, _dt(2010,1,1), '1st entry', comp1, job1),
             _te(2.0, _dt(2010,1,2), '2nd entry', comp1, job2),
-            _te(2.5, _dt(2019,1,3), '3rd entry', comp2, job2, billable=False),
-            _te(3.0, _dt(2019,2,4), '4th entry', comp2, job2)
+            _te(2.5, _dt(2019,1,3), '3rd entry', comp2, job3, billable=False),
+            _te(3.0, _dt(2019,2,4), '4th entry', comp2, job4)
         ]
 
         self.company1_jobs_dict = {job1: 'Job One', job2: 'Job Two'}
         self.company1_jobs = CompanyJobs(comp1, self.company1_jobs_dict)
 
+        self.company2_jobs_dict = {job3: 'Job Three', job4: 'Job Four'}
+        self.company2_jobs = CompanyJobs(comp2, self.company2_jobs_dict)
+        
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
@@ -109,24 +114,24 @@ class TestTimeEntries(BaseClass):
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, None, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None), self.company1_jobs)
         self.assertEqual(invoice.hours_total, 3)
 
         filtered_entries = TimeEntry.query(self.entries, 'Company2')
-        invoice = Invoice(filtered_entries, None, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None), self.company2_jobs)
         self.assertEqual(invoice.hours_total, 3)
 
     def testInvoicePayperiod(self):
-        filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, datetime.datetime(2019,2,18),
-                          (datetime.datetime(2019,2,4), datetime.datetime(2019,2,17)))
+        invoice = Invoice([],
+                          datetime.datetime(2019,2,18),
+                          (datetime.datetime(2019,2,4), datetime.datetime(2019,2,17)), self.company1_jobs)
 
         self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,4))
         self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,17))
 
-        filtered_entries = TimeEntry.query(self.entries, 'Company2')
-        invoice = Invoice(filtered_entries, None,
-                          (datetime.datetime(2019,2,1), datetime.datetime(2019,2,28)))
+        invoice = Invoice([],
+                          None,
+                          (datetime.datetime(2019,2,1), datetime.datetime(2019,2,28)), self.company1_jobs)
         self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,1))
         self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,28))
 
@@ -141,7 +146,7 @@ class TestInvoicing(BaseClass):
         """
         
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, None, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None), self.company1_jobs)
 
         send_start = _dt.now()
         invoice.send()
@@ -162,7 +167,7 @@ class TestInvoicing(BaseClass):
             TimeEntry(2, _dt(2010,1,2), '2nd entry', 'Company1', 'job1'),
             TimeEntry(3, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
             ]
-        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None))
+        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None), self.company1_jobs)
         invoice.send()
 
         printed_txt = """| 1 | 01/01/10 | 1st entry | Company1 | job1 |
@@ -196,7 +201,7 @@ total: 3
 """
 
         filtered_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(filtered_entries, None, (None, None))
+        invoice = Invoice(filtered_entries, None, (None, None), self.company1_jobs)
         invoice.send()
         self.assertEqual(
             invoice.print_txt(self.company1_jobs).splitlines(),

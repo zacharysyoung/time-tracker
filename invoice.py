@@ -5,10 +5,12 @@ from collections import defaultdict
 from time_entry import TimeEntry
 
 class Invoice(object):
-    def __init__(self, entries, payment_date, pay_period, jobs=None):
+    def __init__(self, entries, payment_date, pay_period, jobs):
+        self.company = jobs.company
+
         for i in range(len(entries) - 1, -1, -1):
-            if i > 0 and entries[i].company != entries[i - 1].company:
-                raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, entries[i - 1].company))
+            if i > 0 and entries[i].company != self.company:
+                raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, self.company))
 
             if not entries[i].can_be_invoiced():
                 del(entries[i])
@@ -20,7 +22,6 @@ class Invoice(object):
 
         self.scheduled_payment_date = payment_date
         self.hours_total  = TimeEntry.get_hours_total(self.entries)
-        self.company = self.entries[0].company
         self.datetime_invoiced = None
         self.datetime_paid = None
         self.sent = False

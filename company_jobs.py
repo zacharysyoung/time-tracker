@@ -1,6 +1,6 @@
 class CompanyJobs(object):
     def __init__(self, company, jobs_dict):
-
+        self.company = company
         self.jobs = {}
         for job_id, job_name in jobs_dict.items():
             self.jobs[job_name.lower()] = job_id
