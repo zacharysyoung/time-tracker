@@ -36,7 +36,7 @@ class TestTimeEntries(BaseClass):
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
 
         self.assertEqual(entry.hours, 1.0)
-        self.assertEqual(entry.dt, datetime.datetime(2010,1,1))
+        self.assertEqual(entry.dt, _dt(2010,1,1))
         self.assertEqual(entry.message, '1st entry')
         self.assertEqual(entry.company, 'Company1')
         self.assertEqual(entry.job, 'job1')
@@ -123,20 +123,20 @@ class TestInvoicing(BaseClass):
 
     def testInvoicePayperiod(self):
         invoice = Invoice([],
-                          datetime.datetime(2019,2,18),
-                          (datetime.datetime(2019,2,4), datetime.datetime(2019,2,17)), self.company1_jobs)
+                          _dt(2019,2,18),
+                          (_dt(2019,2,4), _dt(2019,2,17)), self.company1_jobs)
 
-        self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,4))
-        self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,17))
+        self.assertEqual(invoice.payperiod_start, _dt(2019,2,4))
+        self.assertEqual(invoice.payperiod_end, _dt(2019,2,17))
 
         invoice = Invoice([],
                           None,
-                          (datetime.datetime(2019,2,1), datetime.datetime(2019,2,28)), self.company1_jobs)
-        self.assertEqual(invoice.payperiod_start, datetime.datetime(2019,2,1))
-        self.assertEqual(invoice.payperiod_end, datetime.datetime(2019,2,28))
+                          (_dt(2019,2,1), _dt(2019,2,28)), self.company1_jobs)
+        self.assertEqual(invoice.payperiod_start, _dt(2019,2,1))
+        self.assertEqual(invoice.payperiod_end, _dt(2019,2,28))
 
     def testSendInvoice(self):
-        """Asserting the datetime_invoiced value is weird, like what am I
+        """Asserting the invoiced_dt value is weird, like what am I
            trying to prove?  So far, it's only use is being printed in
            text; of interest for future record keeping?  I don't
            really have a personal need for send(), so it's just this
@@ -152,12 +152,12 @@ class TestInvoicing(BaseClass):
         invoice.send()
         send_end = _dt.now()
 
-        self.assertLess(send_start, invoice.datetime_invoiced)
-        self.assertGreater(send_end, invoice.datetime_invoiced)
+        self.assertLess(send_start, invoice.invoiced_dt)
+        self.assertGreater(send_end, invoice.invoiced_dt)
 
         for entry in invoice.entries:
             self.assertFalse(entry.can_be_invoiced())
-            self.assertEqual(entry.datetime_invoiced, invoice.datetime_invoiced)
+            self.assertEqual(entry.invoiced_dt, invoice.invoiced_dt)
 
         self.assertTrue(invoice.sent)
 
@@ -176,7 +176,7 @@ class TestInvoicing(BaseClass):
 
 Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00
 ----
-""".format(invoice.datetime_invoiced)
+""".format(invoice.invoiced_dt)
         
         self.assertEqual(
             invoice.print_entries().splitlines(),
@@ -204,7 +204,7 @@ total: 3
         invoice = Invoice(filtered_entries, None, (None, None), self.company1_jobs)
         invoice.send()
         self.assertEqual(
-            invoice.print_txt(self.company1_jobs).splitlines(),
+            invoice.print_txt().splitlines(),
             printed_invoice.splitlines())
 
     def testWriteInvoice(self):
@@ -289,8 +289,8 @@ total: 3
 """
 
         invoice = gen_invoice_task.gen_invoice_task(
-            ('Company1', datetime.datetime(2019,2,18,17,0),
-             (datetime.datetime(2019,2,3), datetime.datetime(2019,2,17))),
+            ('Company1', _dt(2019,2,18,17,0),
+             (_dt(2019,2,3), _dt(2019,2,17))),
             company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )

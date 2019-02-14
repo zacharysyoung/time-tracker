@@ -5,12 +5,14 @@ from collections import defaultdict
 from time_entry import TimeEntry
 
 class Invoice(object):
-    def __init__(self, entries, payment_date, pay_period, jobs):
+    def __init__(self, entries, payment_dt, pay_period, jobs):
         self.company = jobs.company
 
         for i in range(len(entries) - 1, -1, -1):
-            if i > 0 and entries[i].company != self.company:
-                raise ValueError('Found entries with different companies: %s and %s' % (entries[i].company, self.company))
+            if entries[i].company != self.company:
+                raise ValueError(
+                    'Entry with different company: %s and %s' % (
+                        repr(entries[i]), self.company))
 
             if not entries[i].can_be_invoiced():
                 del(entries[i])
@@ -20,25 +22,21 @@ class Invoice(object):
         for entry in self.entries:
             self.job_ids[entry.job].append(entry)
 
-        self.scheduled_payment_date = payment_date
         self.hours_total  = TimeEntry.get_hours_total(self.entries)
-        self.datetime_invoiced = None
-        self.datetime_paid = None
+        self.invoiced_dt = None
+        self.payment_dt = payment_dt
+        self.paid_dt = None
         self.sent = False
 
         self.payperiod_start = pay_period[0]
         self.payperiod_end = pay_period[1]
         self.jobs = jobs
 
-    def print_txt(self, jobs=None):
-
-        if not jobs:
-            jobs = self.jobs
-
+    def print_txt(self):
         print_str = self.company + '\n'
         grand_total = 0
         for job_id in sorted(self.job_ids.keys()):
-            print_str += jobs.get_name_by_id(job_id) + ':\n'
+            print_str += self.jobs.get_name_by_id(job_id) + ':\n'
             entries = self.job_ids[job_id]
             for entry in entries:
                 # like, Fr 02/01/19: 1.5
@@ -61,8 +59,8 @@ class Invoice(object):
         now = datetime.datetime.now()
         for entry in self.entries:
             entry.invoiced = True
-            entry.datetime_invoiced = now
-        self.datetime_invoiced = now
+            entry.invoiced_dt = now
+        self.invoiced_dt = now
         self.sent = True
 
     def print_entries(self):
@@ -71,8 +69,8 @@ class Invoice(object):
             print_str += str(entry) + '\n'
 
         total = TimeEntry.get_hours_total(self.entries)
-        invoiced = self.datetime_invoiced
-        payment_due = self.scheduled_payment_date
+        invoiced = self.invoiced_dt
+        payment_due = self.payment_dt
 
         print_str += '\nTotal: {} | Invoiced: {} | Payment due: {}'.format(
             total, invoiced, payment_due
