@@ -1,0 +1,104 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/zyoung/TimeTracker/todo.org
+
+
+* TODO Add next_paydate() function to invoice
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:44
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: TODO
+  :END:
+  Returns dt for next payday, has to know some previous payday to
+  calculate every second week, or maybe just `if now::week_num % 2`
+  because we started invoicing at the end of week 1 in the new year.
+
+Archived entries from file /Users/zyoung/TimeTracker/todo.org
+
+
+* DONE Create utility for printing my invoices based on note.txt
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  This should open note.txt, parse it, and print out an invoice
+
+* DONE Normalize jobs on parsing
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  Mcelhose --> mcel, McElhose --> mcel
+
+* DONE Save invoiced entries to separate file
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  Write invoice and invoiced entries to an invoice file
+
+* DONE Make config have nothing to do with IO
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  Right now it's written around ConfigParser which is disk-specific
+  IO. I think it can be rewritten around a dictionary; and so the
+  caller picks their data layer and passes it off as a dictionary.
+  For now, tests and generating invoices for Ken and FF, the data
+  layer will be disk.
+
+* DONE Make invoice for Ken, on 02/12/19
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  Invoice will be for last week (few hours) and this week (zero
+  hours), pay period is 2/4 - 2/17
+
+* DONE gen_invoice_task should create a pay-period specific file
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+
+* DONE Fix self-referential asserts in testWriteInvoice()
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2019-02-14 Thu 00:48
+  :ARCHIVE_FILE: ~/TimeTracker/todo.org
+  :ARCHIVE_OLPATH: Tasks
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+  There are self-referential asserts in =testWriteInvoice()= that
+  don't really prove anything.  This became apparent when changing
+  =self.net_30= to =None= in all the =Invoice()= instantiators.
+  There's a lot of date-time precision that's kept in the written
+  file that might be making testing harder.
+
+  Removed a lot of junk in =testWriteInvoice()= that had nothing to
+  do with the test, which is just verifying that a file was written.
+  All the exact-value assertions (especially dates and computed
+  values) belong in other methods: =testSendInvoice()= and
+  =testPrintInvoicedEntries()=.
