@@ -10,60 +10,59 @@ _dt = datetime.datetime
 
 class BaseClass(unittest.TestCase):
     def setUp(self):
-        self.entry1 = TimeEntry(1.0, datetime.datetime(2019,2,1),
-                                'Made an entry', 'Company1', 'job1')
-        self.entry2 = TimeEntry(2.0, datetime.datetime(2019,2,2),
-                                'Made another entry', 'Company1', 'job2')
-        self.entry3 = TimeEntry(2.5, datetime.datetime(2019,2,3),
-                                'Made 3rd entry', 'Company2', 'job2', billable=False)
-        self.entry4 = TimeEntry(3, datetime.datetime(2019,2,4),
-                                'Made 4th entry', 'Company2', 'job2')
-        self.entries = [self.entry1, self.entry2, self.entry3, self.entry4]
+        comp1 = 'Company1'
+        comp2 = 'Company2'
+        job1 = 'job1'
+        job2 = 'job2'
 
-        self.now = datetime.datetime.now()
-        self.net_30 = self.now + datetime.timedelta(days=30)
-        self.net_45 = self.now + datetime.timedelta(days=45)
+        _te = TimeEntry
+        self.entries = [
+            _te(1.0, _dt(2010,1,1), '1st entry', comp1, job1),
+            _te(2.0, _dt(2010,1,2), '2nd entry', comp1, job2),
+            _te(2.5, _dt(2019,1,3), '3rd entry', comp2, job2, billable=False),
+            _te(3.0, _dt(2019,2,4), '4th entry', comp2, job2)
+        ]
 
-        self.company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
-        self.company1_jobs = CompanyJobs('Company1', self.company1_jobs_dict)
+        self.company1_jobs_dict = {job1: 'Job One', job2: 'Job Two'}
+        self.company1_jobs = CompanyJobs(comp1, self.company1_jobs_dict)
 
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
-        self.assertEqual(self.entry1.hours, 1.0)
-        self.assertEqual(self.entry1.dt, datetime.datetime(2019,2,1))
-        self.assertEqual(self.entry1.message, 'Made an entry')
+        self.assertEqual(self.entries[0].hours, 1.0)
+        self.assertEqual(self.entries[0].dt, datetime.datetime(2010,1,1))
+        self.assertEqual(self.entries[0].message, '1st entry')
 
     def testSumEntryHours(self):
-        self.assertEqual(TimeEntry.get_hours_total([self.entry1, self.entry2]), 3.0)
-        self.assertEqual(TimeEntry.get_hours_total([self.entry1, self.entry2, self.entry3]), 5.5)
+        self.assertEqual(TimeEntry.get_hours_total(self.entries[:2]), 3.0)
+        self.assertEqual(TimeEntry.get_hours_total(self.entries[:3]), 5.5)
         self.assertEqual(TimeEntry.get_hours_total(self.entries), 8.5)
 
     def testGettingUninvoicedEntries(self):
-        uninvoiced_entries = TimeEntry.get_uninvoiced([self.entry1, self.entry2, self.entry3])
-        self.assertEqual(uninvoiced_entries, [self.entry1, self.entry2])
+        uninvoiced_entries = TimeEntry.get_uninvoiced(self.entries[:3])
+        self.assertEqual(uninvoiced_entries, self.entries[:2])
 
-        self.entry2.invoiced = True
+        self.entries[1].invoiced = True
         
-        uninvoiced_entries = TimeEntry.get_uninvoiced([self.entry1, self.entry2, self.entry3])
-        self.assertEqual(uninvoiced_entries, [self.entry1])
+        uninvoiced_entries = TimeEntry.get_uninvoiced(self.entries[:3])
+        self.assertEqual(uninvoiced_entries, self.entries[0:1])
 
     def testFilterEntries(self):
         filtered_entries = TimeEntry.query(self.entries, company='Company1')
-        self.assertEqual(filtered_entries, [self.entry1, self.entry2])
+        self.assertEqual(filtered_entries, self.entries[:2])
 
     def testParseEntryNotesSimple(self):
-        note_txt = """1,02/01/19,"Made an entry",Company1,Job One
-2,2/2/19,Made another entry,Company1,Job Two"""
+        note_txt = """1,01/01/10,"1st entry",Company1,Job One
+2,1/2/10,2nd entry,Company1,Job Two"""
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
-        self.assertEqual(entries, [self.entry1, self.entry2])
+        self.assertEqual(entries, self.entries[:2])
 
     def testParseEntryNotesWithJobMappings(self):
         # Test job1 --> Job One, and Job two --> Job Two
-        note_txt = """1,02/01/19,"Made an entry",Company1,job1
-2,2/2/19,Made another entry,Company1,Job two"""
+        note_txt = """1,01/01/10,"1st entry",Company1,job1
+2,1/2/10,2nd entry,Company1,Job two"""
 
         entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
-        self.assertEqual(entries, [self.entry1, self.entry2])
+        self.assertEqual(entries, self.entries[:2])
 
 
 class TestInvoicing(BaseClass):
@@ -142,12 +141,12 @@ Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00
     def testPrintInvoice(self):
         printed_invoice = """Company1
 Job One:
-Fr 02/01/19: 1
+Fr 01/01/10: 1
 ----
 total: 1
 
 Job Two:
-Sa 02/02/19: 2
+Sa 01/02/10: 2
 ----
 total: 2
 
