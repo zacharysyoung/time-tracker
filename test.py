@@ -28,42 +28,83 @@ class BaseClass(unittest.TestCase):
 
 class TestTimeEntries(BaseClass):
     def testCreateTimeEntry(self):
-        self.assertEqual(self.entries[0].hours, 1.0)
-        self.assertEqual(self.entries[0].dt, datetime.datetime(2010,1,1))
-        self.assertEqual(self.entries[0].message, '1st entry')
+        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+
+        self.assertEqual(entry.hours, 1.0)
+        self.assertEqual(entry.dt, datetime.datetime(2010,1,1))
+        self.assertEqual(entry.message, '1st entry')
+        self.assertEqual(entry.company, 'Company1')
+        self.assertEqual(entry.job, 'job1')
 
     def testSumEntryHours(self):
-        self.assertEqual(TimeEntry.get_hours_total(self.entries[:2]), 3.0)
-        self.assertEqual(TimeEntry.get_hours_total(self.entries[:3]), 5.5)
-        self.assertEqual(TimeEntry.get_hours_total(self.entries), 8.5)
+        entry1 = TimeEntry(1, None, None, None, None)
+        entry2 = TimeEntry(2, None, None, None, None)
+        entry3 = TimeEntry(2.5, None, None, None, None)
+        entry4 = TimeEntry(3.0, None, None, None, None)
 
-    def testGettingUninvoicedEntries(self):
-        uninvoiced_entries = TimeEntry.get_uninvoiced(self.entries[:3])
-        self.assertEqual(uninvoiced_entries, self.entries[:2])
-
-        self.entries[1].invoiced = True
-        
-        uninvoiced_entries = TimeEntry.get_uninvoiced(self.entries[:3])
-        self.assertEqual(uninvoiced_entries, self.entries[0:1])
+        _total = TimeEntry.get_hours_total
+        self.assertEqual(_total([entry1, entry2]), 3.0)
+        self.assertEqual(_total([entry1, entry2, entry3]), 5.5)
+        self.assertEqual(_total([entry1, entry2, entry3, entry4]), 8.5)
 
     def testFilterEntries(self):
-        filtered_entries = TimeEntry.query(self.entries, company='Company1')
-        self.assertEqual(filtered_entries, self.entries[:2])
+        comp1_entries = [
+            TimeEntry(None, None, None, 'Company1', None) for i in range(100)
+            ]
+        comp2_entries = [
+            TimeEntry(None, None, None, 'Company2', None) for i in range(100)
+            ]
+        comp3_entries = [
+            TimeEntry(None, None, None, 'Company3', None) for i in range(100)
+            ]
 
-    def testParseEntryNotesSimple(self):
-        note_txt = """1,01/01/10,"1st entry",Company1,Job One
-2,1/2/10,2nd entry,Company1,Job Two"""
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
-        self.assertEqual(entries, self.entries[:2])
+        all_entries = comp1_entries + comp2_entries + comp3_entries
 
-    def testParseEntryNotesWithJobMappings(self):
-        # Test job1 --> Job One, and Job two --> Job Two
-        note_txt = """1,01/01/10,"1st entry",Company1,job1
-2,1/2/10,2nd entry,Company1,Job two"""
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company1'), comp1_entries)
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company2'), comp2_entries)
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company3'), comp3_entries)
 
-        entries = TimeEntry.parse_note(StringIO.StringIO(note_txt), self.company1_jobs)
-        self.assertEqual(entries, self.entries[:2])
+        import random
+        random.shuffle(all_entries)
 
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company1'), comp1_entries)
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company2'), comp2_entries)
+        self.assertEqual(
+            TimeEntry.query(all_entries, 'Company3'), comp3_entries)
+
+    def testParseEntryNote(self):
+        def _test_parse(txt):
+            self.assertEqual(
+                TimeEntry.parse_note(StringIO.StringIO(txt), jobs)[0],
+                entry
+                )
+
+        jobs = CompanyJobs('Company1', {'job1': 'Job One', 'job2': 'Job Two'})
+        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+
+        # test m/d/yy
+        _test_parse('1,1/1/10,1st entry,Company1,Job One')
+
+        # test mm/dd/yy
+        _test_parse('1,01/01/10,1st entry,Company1,Job One')
+
+        # test job1 <--> Job One
+        _test_parse('1,1/1/10,1st entry,Company1,job1')
+
+        # test quoted comment
+        _test_parse('1,1/1/10,"1st entry",Company1,job1')
+
+        # test float
+        _test_parse('1.0,1/1/10,"1st entry",Company1,job1')
+
+        # errors
+        with self.assertRaises(IndexError):
+            _test_parse('')
 
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):
@@ -114,7 +155,6 @@ class TestInvoicing(BaseClass):
             self.assertEqual(entry.datetime_invoiced, invoice.datetime_invoiced)
 
         self.assertTrue(invoice.sent)
-        self.assertEqual(TimeEntry.get_uninvoiced(invoice.entries), [])
 
     def testPrintInvoicedEntries(self):
         entries = [

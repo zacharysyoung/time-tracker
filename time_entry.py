@@ -7,14 +7,6 @@ class TimeEntry(object):
         return hours_total
 
     @classmethod
-    def get_uninvoiced(cls, entries):
-        _entries = []
-        for entry in entries:
-            if entry.can_be_invoiced():
-                _entries.append(entry)
-        return _entries
-
-    @classmethod
     def parse_note(cls, note_data, jobs):
         def _assert_field_count(row, field_count):
             assert len(row) == field_count, \
@@ -52,11 +44,9 @@ class TimeEntry(object):
 
             id_or_name = _unicode(s)
 
-            # Use value as id for name, and return id
             if jobs.get_name_by_id(id_or_name):
                 return id_or_name
 
-            # Use value as name for id
             job_id = jobs.get_id_by_name(id_or_name)
             if job_id:
                 return job_id
@@ -83,7 +73,10 @@ class TimeEntry(object):
         return entries
 
     @classmethod
-    def query(cls, entries, company, job=None):
+    def query(cls, entries, company):
+        """This only ever seems to be called right before making an invoice,
+            so maybe this belongs in invoice.py.
+        """
         _entries = []
         for entry in entries:
             if company and entry.company == company:
