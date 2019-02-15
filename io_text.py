@@ -49,3 +49,20 @@ class IoTxt(object):
         f.close()
         
 
+    @classmethod
+    def read_invoice(cls, path):
+        from company_jobs import CompanyJobs
+        from invoice import Invoice
+
+        with open(path, 'r') as f:
+            lines = f.read().splitlines()
+        
+        entries = []
+        company_name = lines[0].strip()
+        # for line in lines:
+        #     if line.startswith('|'):
+        #         entry_components = line.split('|')
+
+        company_jobs = CompanyJobs(company_name, {}, None)
+
+        return Invoice(entries, None, (None, None), company_jobs)

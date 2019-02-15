@@ -3,6 +3,14 @@ import unittest
 
 import file_util
 
+# Maybe I shouldn't have to import these?  Not sure if the test having
+# this explicit knowledge of the modules defeats the notion of an API.
+from datetime import datetime as _dt
+from company_jobs import CompanyJobs
+from invoice import Invoice
+from time_entry import TimeEntry
+
+
 from io_text import IoTxt
 
 class TestCompanyJobs(unittest.TestCase):
@@ -24,11 +32,6 @@ class TestCompanyJobs(unittest.TestCase):
 
 class TestInvoice(unittest.TestCase):
     def testWriter(self):
-        from datetime import datetime as _dt
-        from company_jobs import CompanyJobs
-        from invoice import Invoice
-        from time_entry import TimeEntry
-
         invoice = Invoice(
             [TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')],
             _dt(2010,1,14),
@@ -62,3 +65,25 @@ Total: 1 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 20
             self.assertEqual(f.read().splitlines(), invoice_txt.splitlines())
         
         file_util.del_path(tmppath)
+
+    def testReadWriteBackToOriginal(self):
+        """ invoice == read_invoice(write_invoice(invoice)) """
+        from invoice import Invoice
+        from time_entry import TimeEntry
+        
+        invoice = Invoice(
+            [TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')],
+            _dt(2010,1,14),
+            (_dt(2010,1,1), _dt(2010,1,13)),
+            CompanyJobs('Company1', {'job1': 'Job One'}, 20)
+        )
+        invoice.send()
+
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmpfile.close()
+        tmppath = tmpfile.name
+
+        IoTxt.write_invoice(tmppath, invoice)
+        readwrite_invoice = IoTxt.read_invoice(tmppath)
+        
+        self.assertEqual(readwrite_invoice.company, invoice.company)

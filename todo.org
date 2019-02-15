@@ -37,4 +37,4 @@
    Methods or classmethods, like =Invoice.write_file()=,
    =TimeEntry.parse_note()=, or =CompanyJobs.get_jobs_from_ini()=,
    belong in a separate IO layer.  Maybe something like io/txt_files.
-*** TODO Make a read_invoice() method to try reading/parsing back.
+** TODO Make it so: ~invoice == read_invoice(write_invoice(invoice)))~
