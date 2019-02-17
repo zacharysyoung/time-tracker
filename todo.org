@@ -33,7 +33,7 @@
 ** TODO Re-evaluate tests for payment_date in Invoice
    Just changed all net_30 date-times to None, and no tests broke.
    Make tests break, then fix the code.
-** TODO Move all IO stuff out of TimeEntry, Invoice, and CompanyJobs
+** DONE Move all IO stuff out of TimeEntry, Invoice, and CompanyJobs
    Methods or classmethods, like =Invoice.write_file()=,
    =TimeEntry.parse_note()=, or =CompanyJobs.get_jobs_from_ini()=,
    belong in a separate IO layer.  Maybe something like io/txt_files.

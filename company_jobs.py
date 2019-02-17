@@ -14,27 +14,3 @@ class CompanyJobs(object):
     def get_name_by_id(self, _id):
         return self.jobs.get(_id)
 
-    @classmethod
-    def get_jobs_from_ini(cls, ini_data=None):
-        """
-        From id: Name to {name: id, id: id}, so that a search by name or
-        or id always returns id
-        """
-
-        if ini_data:
-            pass
-        else:
-            with open('jobs.ini', 'r') as f:
-                config.readfp(f)
-
-
-
-
-    def _job(s, company):
-        if not s:
-            return None
-
-        s = _unicode(s)
-        return _jobs[company][s]
-
-
