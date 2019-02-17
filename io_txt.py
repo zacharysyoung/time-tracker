@@ -1,3 +1,5 @@
+import cPickle
+
 def print_hours_for_ken(invoice):
     print_str = invoice.company + '\n'
     grand_total = 0
@@ -105,3 +107,11 @@ def parse_entries_from_note(note_data, jobs):
         )
         )
     return entries
+
+def unpickle(fname):
+    with open(fname, 'rb') as f:
+        return cPickle.load(f)
+
+def pickle(invoice, fname):
+    with open(fname, 'wb') as f:
+        return cPickle.dump(invoice, f, protocol=-1)

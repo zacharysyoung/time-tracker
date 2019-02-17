@@ -7,6 +7,10 @@ class CompanyJobs(object):
             self.jobs[job_id] = job_name
         self.wage = wage
 
+    def __eq__(self, other):
+        return self.company == other.company and \
+            self.jobs == other.jobs and \
+            self.wage == other.wage
 
     def get_id_by_name(self, _name):
         return self.jobs.get(_name.lower())

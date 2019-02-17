@@ -1,8 +1,10 @@
 import datetime
 import unittest
 import StringIO
+import tempfile
 
 import io_txt
+import file_util
 from company_jobs import CompanyJobs
 from invoice import Invoice
 from time_entry import TimeEntry
@@ -198,7 +200,6 @@ total: 3
 class TestFileOperations(unittest.TestCase):
     def testAppendFile(self):
         import os
-        import tempfile
 
         import file_util
 
@@ -220,7 +221,6 @@ class TestFileOperations(unittest.TestCase):
 
     def testDeletePath(self):
         import os
-        import tempfile
 
         import file_util
 
@@ -269,7 +269,6 @@ total: 3.5
         )
 
     def testWriteInvoice(self):
-        import tempfile
         import file_util
 
         comp1_entries = TimeEntry.query(self.entries, 'Company1')
@@ -349,3 +348,28 @@ Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00 | Gross $: 120
         # errors
         with self.assertRaises(IndexError):
             _test_parse('')
+
+    def testReadWriteInvoice2(self):
+        entries = [
+            TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
+            TimeEntry(2, _dt(2010,1,2), '2nd entry', 'Company1', 'job1'),
+            TimeEntry(3, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
+            ]
+        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None), self.company1_jobs)
+        invoice.send()
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmppath = tmpfile.name
+        tmpfile.close()
+        io_txt.pickle(invoice, tmppath)
+        read_invoice = io_txt.unpickle(tmppath)
+        self.assertEqual(read_invoice, invoice)
+        file_util.del_path(tmppath)
+
+    def testReadWriteEntry(self):
+        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmppath = tmpfile.name
+        tmpfile.close()
+        io_txt.pickle(entry, tmppath)
+        read_entry = io_txt.unpickle(tmppath)
+        self.assertEqual(read_entry, entry)

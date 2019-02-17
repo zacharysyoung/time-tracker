@@ -21,8 +21,10 @@ def main(company, print_txt=True):
     invoice = gen_invoice_task(company, jobs_dict, note_data)
     invoice.send()
 
-    fname = 'invoices/{:%Y%m%d}_{:%Y%m%d}_{}.txt'.format(invoice.payperiod_start, invoice.payperiod_end, company[0])
-    io_txt.write_invoice_report(invoice, fname)
+    fname = 'invoices/{:%Y%m%d}_{:%Y%m%d}_{}'.format(invoice.payperiod_start, invoice.payperiod_end, company[0])
+    io_txt.write_invoice_report(invoice, fname + '.txt')
+    io_txt.pickle(invoice, fname + '_invoice.pkl')
+    
 
 def gen_invoice_task(company, jobs_dict, note_data):
     company_name, payment_dt, pay_period, wage = company

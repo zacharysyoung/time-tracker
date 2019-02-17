@@ -38,3 +38,7 @@
    =TimeEntry.parse_note()=, or =CompanyJobs.get_jobs_from_ini()=,
    belong in a separate IO layer.  Maybe something like io/txt_files.
 ** TODO Make it so: ~invoice == read_invoice(write_invoice(invoice)))~
+   Ended up just going with =unpickle(pickle(obj))=, but that's all I
+   really specified, which makes me think I need to rethink how I
+   write these TODOs.
+*** TODO Write invoiced entries to separate file(s) when an invoice is sent(?)
