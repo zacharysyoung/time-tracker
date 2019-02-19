@@ -1,6 +1,7 @@
 import datetime
-import tempfile
+import os
 import StringIO
+import tempfile
 import unittest
 
 import file_util
@@ -9,25 +10,38 @@ import io_txt
 from company_jobs import CompanyJobs
 from invoice import Invoice
 from time_entry import TimeEntry
-from test import BaseClass
 
 _dt = datetime.datetime
 
-class TestIO(BaseClass):
+
+class BaseClassIO(unittest.TestCase):
+    def setUp(self):
+        super(BaseClassIO, self).setUp()
+
+        self.invoice = Invoice(
+            [
+                TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
+                TimeEntry(2.5, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
+            ],
+            _dt(2010,1,14),
+            (_dt(2010,1,1), _dt(2010,1,13)),
+            CompanyJobs('Company1', {'job1': 'Job One'}, 20)
+            )
+
+
+class TestIO(BaseClassIO):
     def testWriteInvoiceForTextingToKen(self):
-        import io_txt
         invoice = Invoice(
-            [TimeEntry(1, _dt(2010,1,1), None, 'Comp1', 'job1'),
-             TimeEntry(2.5, _dt(2010,1,2), None, 'Comp1', 'job1')
+            [TimeEntry(1, _dt(2010,1,1), None, 'Company1', 'job1'),
              ],
             None,
             (_dt(2010,1,1), _dt(2010,1,13)),
-            CompanyJobs('Comp1', {'job1': 'Job One'}, None)
+            CompanyJobs('Company1', {'job1': 'Job One'}, None)
         )
-        txt = io_txt.print_hours_for_ken(invoice)
+        txt = io_txt.print_hours_for_ken(self.invoice)
         self.assertEqual(
             txt,
-            """Comp1
+            """Company1
 Job One:
 Fr 01/01/10: 1
 Sa 01/02/10: 2.5
@@ -41,68 +55,43 @@ total: 3.5
         )
 
     def testGetInvoiceName(self):
-        comp1_entries = TimeEntry.query(self.entries, 'Company1')
-
-        payperiod = (_dt(2010,1,1), _dt(2010,1,13))
-        invoice = Invoice(comp1_entries, None, payperiod, self.company1_jobs)
-
-        invoice_name = io_txt.get_invoice_name(invoice)
+        invoice_name = io_txt.get_invoice_name(self.invoice)
         self.assertEqual(invoice_name, '20100101_20100113_Company1')
 
     def testGetFullInvoicePath(self):
-        comp1_entries = TimeEntry.query(self.entries, 'Company1')
-
-        payperiod = (_dt(2010,1,1), _dt(2010,1,13))
-        invoice = Invoice(comp1_entries, None, payperiod, self.company1_jobs)
-
-        invoice_path = io_txt.get_full_invoice_path(invoice)
+        invoice_path = io_txt.get_full_invoice_path(self.invoice)
         self.assertEqual(invoice_path,
                          'invoices/20100101_20100113_Company1.pkl')
 
     def testWriteInovice(self):
-        from os.path import exists, join
-        comp1_entries = TimeEntry.query(self.entries, 'Company1')
+        invoice_path = io_txt.get_full_invoice_path(self.invoice)
 
-        payperiod = (_dt(2010,1,1), _dt(2010,1,13))
-        invoice = Invoice(comp1_entries, None, payperiod, self.company1_jobs)
-        invoice_path = io_txt.get_full_invoice_path(invoice)
-
-        if exists(invoice_path):
+        if os.path.exists(invoice_path):
             file_util.del_path(invoice_path)
             
-        io_txt.write_invoice(invoice)
-        self.assertTrue(exists(invoice_path))
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(invoice_path))
 
         file_util.del_path(invoice_path)
 
     def testWriteAlreadyExistingInvoiceError(self):
-        from os.path import exists, join
-        comp1_entries = TimeEntry.query(self.entries, 'Company1')
+        invoice_p = io_txt.get_full_invoice_path(self.invoice)
 
-        payperiod = (_dt(2010,1,1), _dt(2010,1,13))
-        invoice = Invoice(comp1_entries, None, payperiod, self.company1_jobs)
-
-        invoice_p = io_txt.get_full_invoice_path(invoice)
-
-        if exists(invoice_p):
+        if os.path.exists(invoice_p):
             file_util.del_path(invoice_p)
 
-        io_txt.write_invoice(invoice)
-        self.assertTrue(exists(invoice_p))
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(invoice_p))
 
         with self.assertRaises(IOError) as e:
-            io_txt.write_invoice(invoice)
+            io_txt.write_invoice(self.invoice)
             self.assertEqual(e.errno, 1024)
             self.assertEqual(e.strerror, 'File already exists: %s' % invoice_p)
 
         file_util.del_path(invoice_p)
 
     def testWriteInvoiceReport(self):
-        import file_util
-
-        comp1_entries = TimeEntry.query(self.entries, 'Company1')
-        invoice = Invoice(comp1_entries, None, (None, None), self.company1_jobs)
-        invoice.send()
+        self.invoice.send()
 
         # open named-temp file to get its path
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -112,40 +101,30 @@ total: 3.5
         tmpfile.close()
 
         # so other processes can open it
-        io_txt.write_invoice_report(invoice, tmppath)
-
-        entries_str = ''
-        for entry in comp1_entries:
-            entries_str += str(entry) + '\n'
+        io_txt.write_invoice_report(self.invoice, tmppath)
 
         # Assert file was written and contains some basic values
         with open(tmppath, 'r') as f:
             written_txt =  f.read()
-            self.assertIn(comp1_entries[0].message, written_txt)
+            _entries = self.invoice.entries
+            self.assertIn(_entries[0].message, written_txt)
             self.assertIn(
-                str(TimeEntry.get_hours_total(comp1_entries)), written_txt)
+                str(TimeEntry.get_hours_total(_entries)), written_txt)
 
         file_util.del_path(tmppath)
         
     def testPrintInvoicedEntries(self):
-        entries = [
-            TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
-            TimeEntry(2, _dt(2010,1,2), '2nd entry', 'Company1', 'job1'),
-            TimeEntry(3, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
-            ]
-        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None), self.company1_jobs)
-        invoice.send()
+        self.invoice.send()
 
         printed_txt = """| 1 | 01/01/10 | 1st entry | Company1 | job1 |
-| 2 | 01/02/10 | 2nd entry | Company1 | job1 |
-| 3 | 01/03/10 | 3rd entry | Company1 | job1 |
+| 2.5 | 01/02/10 | 2nd entry | Company1 | job1 |
 
-Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00 | Gross $: 120
+Total: 3.5 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 70.0
 ----
-""".format(invoice.invoiced_dt)
+""".format(self.invoice.invoiced_dt)
         
         self.assertEqual(
-            io_txt.print_entries(invoice).splitlines(),
+            io_txt.print_entries(self.invoice).splitlines(),
             printed_txt.strip().splitlines()
         )
 
@@ -179,19 +158,12 @@ Total: 6 | Invoiced: {} | Payment due: 2010-01-05 17:00:00 | Gross $: 120
             _test_parse('')
 
     def testReadWriteInvoice2(self):
-        entries = [
-            TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
-            TimeEntry(2, _dt(2010,1,2), '2nd entry', 'Company1', 'job1'),
-            TimeEntry(3, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
-            ]
-        invoice = Invoice(entries, _dt(2010,1,5,17,0), (None, None), self.company1_jobs)
-        invoice.send()
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmppath = tmpfile.name
         tmpfile.close()
-        io_txt.pickle(invoice, tmppath)
+        io_txt.pickle(self.invoice, tmppath)
         read_invoice = io_txt.unpickle(tmppath)
-        self.assertEqual(read_invoice, invoice)
+        self.assertEqual(read_invoice, self.invoice)
         file_util.del_path(tmppath)
 
     def testReadWriteEntry(self):
