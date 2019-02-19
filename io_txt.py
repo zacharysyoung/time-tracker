@@ -1,4 +1,12 @@
+import os
 import cPickle
+
+def get_invoice_name(invoice):
+    return '{:%Y%m%d}_{:%Y%m%d}_{}'.format(
+        invoice.payperiod_start, invoice.payperiod_end, invoice.company)
+
+def get_full_invoice_path(invoice):
+    return os.path.join('invoices', get_invoice_name(invoice)) + '.pkl'
 
 def print_hours_for_ken(invoice):
     print_str = invoice.company + '\n'
@@ -39,6 +47,12 @@ def print_entries(invoice):
         )
     print_str += '\n----\n'
     return print_str
+
+def write_invoice(invoice):
+    fname = get_full_invoice_path(invoice)
+    if os.path.exists(fname):
+        raise IOError(1024, 'File already exists: %s' % fname)
+    pickle(invoice, fname)
 
 def write_invoice_report(invoice, path):
     with open(path, 'w') as f:
