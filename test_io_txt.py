@@ -4,7 +4,7 @@ import StringIO
 import tempfile
 import unittest
 
-import file_util
+from file_util import del_path
 import io_txt
 
 from company_jobs import CompanyJobs
@@ -43,18 +43,18 @@ class TestIO(BaseClassIO):
         invoice_path = io_txt.get_full_invoice_path(self.invoice)
 
         if os.path.exists(invoice_path):
-            file_util.del_path(invoice_path)
+            del_path(invoice_path)
             
         io_txt.write_invoice(self.invoice)
         self.assertTrue(os.path.exists(invoice_path))
 
-        file_util.del_path(invoice_path)
+        del_path(invoice_path)
 
     def testWriteAlreadyExistingInvoiceError(self):
         invoice_p = io_txt.get_full_invoice_path(self.invoice)
 
         if os.path.exists(invoice_p):
-            file_util.del_path(invoice_p)
+            del_path(invoice_p)
 
         io_txt.write_invoice(self.invoice)
         self.assertTrue(os.path.exists(invoice_p))
@@ -64,7 +64,7 @@ class TestIO(BaseClassIO):
             self.assertEqual(e.errno, 1024)
             self.assertEqual(e.strerror, 'File already exists: %s' % invoice_p)
 
-        file_util.del_path(invoice_p)
+        del_path(invoice_p)
 
     def testWriteInvoiceReport(self):
         self.invoice.send()
@@ -87,7 +87,7 @@ class TestIO(BaseClassIO):
             self.assertIn(
                 str(TimeEntry.get_hours_total(_entries)), written_txt)
 
-        file_util.del_path(tmppath)
+        del_path(tmppath)
         
     def testParseEntryNote(self):
         def _test_parse(txt):
@@ -122,20 +122,24 @@ class TestIO(BaseClassIO):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmppath = tmpfile.name
         tmpfile.close()
+
         io_txt.pickle(self.invoice, tmppath)
         read_invoice = io_txt.unpickle(tmppath)
         self.assertEqual(read_invoice, self.invoice)
-        file_util.del_path(tmppath)
+
+        del_path(tmppath)
 
     def testReadWriteEntry(self):
-        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
         tmppath = tmpfile.name
         tmpfile.close()
+
+        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
         io_txt.pickle(entry, tmppath)
         read_entry = io_txt.unpickle(tmppath)
         self.assertEqual(read_entry, entry)
 
+        del_path(tmppath)
 
 
 class TestPrinting(BaseClassIO):
@@ -229,7 +233,7 @@ class TestFileOperations(unittest.TestCase):
         with open(tmpname, 'r+b') as f:
             self.assertEqual(f.read(), 'Old Line\nNew Line\n')
 
-        file_util.del_path(tmpname)
+        del_path(tmpname)
 
     def testDeletePath(self):
         import os
@@ -241,13 +245,13 @@ class TestFileOperations(unittest.TestCase):
         f.close()
         invalid_path = f.name
         with self.assertRaises(OSError):
-            file_util.del_path(invalid_path)
+            del_path(invalid_path)
 
-        self.assertIsNone(file_util.del_path(invalid_path, ignore_error=2))
+        self.assertIsNone(del_path(invalid_path, ignore_error=2))
         
         # Test real delete; system does not delete on close: delete=False
         f = tempfile.NamedTemporaryFile(delete=False)
         f.close()
         self.assertTrue(os.path.exists(f.name))
-        file_util.del_path(f.name)
+        del_path(f.name)
         self.assertFalse(os.path.exists(f.name))
