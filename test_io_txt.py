@@ -30,30 +30,6 @@ class BaseClassIO(unittest.TestCase):
 
 
 class TestIO(BaseClassIO):
-    def testWriteInvoiceForTextingToKen(self):
-        invoice = Invoice(
-            [TimeEntry(1, _dt(2010,1,1), None, 'Company1', 'job1'),
-             ],
-            None,
-            (_dt(2010,1,1), _dt(2010,1,13)),
-            CompanyJobs('Company1', {'job1': 'Job One'}, None)
-        )
-        txt = io_txt.print_hours_for_ken(self.invoice)
-        self.assertEqual(
-            txt,
-            """Company1
-Job One:
-Fr 01/01/10: 1
-Sa 01/02/10: 2.5
-----
-total: 3.5
-
-----
-total: 3.5
-
-"""
-        )
-
     def testGetInvoiceName(self):
         invoice_name = io_txt.get_invoice_name(self.invoice)
         self.assertEqual(invoice_name, '20100101_20100113_Company1')
@@ -113,21 +89,6 @@ total: 3.5
 
         file_util.del_path(tmppath)
         
-    def testPrintInvoicedEntries(self):
-        self.invoice.send()
-
-        printed_txt = """| 1 | 01/01/10 | 1st entry | Company1 | job1 |
-| 2.5 | 01/02/10 | 2nd entry | Company1 | job1 |
-
-Total: 3.5 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 70.0
-----
-""".format(self.invoice.invoiced_dt)
-        
-        self.assertEqual(
-            io_txt.print_entries(self.invoice).splitlines(),
-            printed_txt.strip().splitlines()
-        )
-
     def testParseEntryNote(self):
         def _test_parse(txt):
             parsed_entries = io_txt.parse_entries_from_note(
@@ -176,7 +137,47 @@ Total: 3.5 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 70.0
         self.assertEqual(read_entry, entry)
 
 
-class TestGenInvoiceTask(unittest.TestCase):
+
+class TestPrinting(BaseClassIO):
+    def testPrintInvoicedEntries(self):
+        self.invoice.send()
+
+        printed_txt = """| 1 | 01/01/10 | 1st entry | Company1 | job1 |
+| 2.5 | 01/02/10 | 2nd entry | Company1 | job1 |
+
+Total: 3.5 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 70.0
+----
+""".format(self.invoice.invoiced_dt)
+        
+        self.assertEqual(
+            io_txt.print_entries(self.invoice).splitlines(),
+            printed_txt.strip().splitlines()
+        )
+
+    def testPrintInvoiceForTextingToKen(self):
+        invoice = Invoice(
+            [TimeEntry(1, _dt(2010,1,1), None, 'Company1', 'job1'),
+             ],
+            None,
+            (_dt(2010,1,1), _dt(2010,1,13)),
+            CompanyJobs('Company1', {'job1': 'Job One'}, None)
+        )
+        txt = io_txt.print_hours_for_ken(self.invoice)
+        self.assertEqual(
+            txt,
+            """Company1
+Job One:
+Fr 01/01/10: 1
+Sa 01/02/10: 2.5
+----
+total: 3.5
+
+----
+total: 3.5
+
+"""
+        )
+
     def testTaskWithMockData(self):
         import gen_invoice_task
         company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
