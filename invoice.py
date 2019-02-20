@@ -31,19 +31,13 @@ class Invoice(object):
         self.payperiod_start = pay_period[0]
         self.payperiod_end = pay_period[1]
         self.jobs = jobs
+        self.id = id(self)
 
     def __eq__(self, other):
-        return self.company == other.company and \
-            self.entries == other.entries and \
-            self.hours_total == other.hours_total and \
-            self.invoiced_dt == other.invoiced_dt and \
-            self.payment_dt == other.payment_dt and \
-            self.paid_dt == other.paid_dt and \
-            self.sent == other.sent and \
-            self.payperiod_start == other.payperiod_start and \
-            self.payperiod_end == other.payperiod_end and \
-            self.jobs == other.jobs
-    
+        return other.id == self.id
+
+    def __ne__(self, other):
+        return other.id != self.id
 
     def send(self):
         now = datetime.datetime.now()

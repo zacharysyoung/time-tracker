@@ -44,7 +44,7 @@ class TestIO(BaseClassIO):
         self.assertEqual(invoice_path,
                          'io/fs/reports/20100101_20100113_Company1.txt')
         
-    def testWriteInovice(self):
+    def testWriteInvoice(self):
         invoice_path = io_txt.get_invoice_path(self.invoice)
 
         if os.path.exists(invoice_path):
@@ -105,10 +105,14 @@ class TestIO(BaseClassIO):
             parsed_entries = io_txt.parse_entries_from_note(
                 StringIO.StringIO(txt), jobs
             )
-            self.assertEqual(parsed_entries[0], entry)
+            parsed_entry = parsed_entries[0]
+            self.assertEqual(parsed_entry.hours, 1)
+            self.assertEqual(parsed_entry.dt, _dt(2010,1,1))
+            self.assertEqual(parsed_entry.message, '1st entry')
+            self.assertEqual(parsed_entry.company, 'Company1')
+            self.assertEqual(parsed_entry.job, 'job1')
 
-        jobs = CompanyJobs('Company1', {'job1': 'Job One', 'job2': 'Job Two'}, 20)
-        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+        jobs = CompanyJobs('Company1', {'job1': 'Job One'}, 20)
 
         # test m/d/yy
         _test_parse('1,1/1/10,1st entry,Company1,Job One')
@@ -129,17 +133,14 @@ class TestIO(BaseClassIO):
         with self.assertRaises(IndexError):
             _test_parse('')
 
-    def testReadWriteEntry(self):
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmppath = tmpfile.name
-        tmpfile.close()
-
+    def testOpenEntry(self):
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
-        io_txt.pickle(entry, tmppath)
-        read_entry = io_txt.unpickle(tmppath)
+        entry_path = io_txt.get_entry_path(entry)
+        io_txt.write_entry(entry)
+        read_entry = io_txt.open_entry(entry_path)
         self.assertEqual(read_entry, entry)
 
-        del_path(tmppath)
+        del_path(entry_path)
 
 
 class TestPrinting(BaseClassIO):

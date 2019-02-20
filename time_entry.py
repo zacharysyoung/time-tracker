@@ -25,15 +25,13 @@ class TimeEntry(object):
         self.invoiced = False
         self.company = company
         self.job = job
+        self.id = id(self)
 
     def __eq__(self, other):
-        return self.hours == other.hours and \
-               self.dt == other.dt and \
-               self.message == other.message and \
-               self.billable == other.billable and \
-               self.invoiced == other.invoiced and \
-               self.company == other.company and \
-               self.job == other.job
+        return other.id == self.id
+
+    def __ne__(self, other):
+        return other.id != self.id
 
     def can_be_invoiced(self):
         return self.billable and not self.invoiced

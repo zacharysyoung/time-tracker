@@ -129,10 +129,25 @@ def parse_entries_from_note(note_data, jobs):
         )
     return entries
 
+def get_entry_name(entry):
+    return str(entry.id)
+
+def get_entry_path(entry):
+    return 'io/fs/entries/' + get_entry_name(entry) + '.pkl'
+
+def open_entry(path):
+    return unpickle(path)
+
+def write_entry(entry):
+    path = get_entry_path(entry)
+    if os.path.exists(path):
+        raise IOError(1024, 'File already exists: %s' % path)
+    pickle(entry, path)
+
 def unpickle(fname):
-    with open(fname, 'rb') as f:
+    with open(fname, 'r+b') as f:
         return cPickle.load(f)
 
-def pickle(invoice, fname):
-    with open(fname, 'wb') as f:
-        return cPickle.dump(invoice, f, protocol=-1)
+def pickle(obj, fname):
+    with open(fname, 'w+b') as f:
+        return cPickle.dump(obj, f, protocol=-1)

@@ -66,22 +66,22 @@ class TestTimeEntries(BaseClass):
 
         all_entries = comp1_entries + comp2_entries + comp3_entries
 
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company1'), comp1_entries)
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company2'), comp2_entries)
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company3'), comp3_entries)
+        for entry in TimeEntry.query(all_entries, 'Company1'):
+            self.assertEqual(entry.company, 'Company1')
+        for entry in TimeEntry.query(all_entries, 'Company2'):
+            self.assertEqual(entry.company, 'Company2')
+        for entry in TimeEntry.query(all_entries, 'Company3'):
+            self.assertEqual(entry.company, 'Company3')
 
         import random
         random.shuffle(all_entries)
 
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company1'), comp1_entries)
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company2'), comp2_entries)
-        self.assertEqual(
-            TimeEntry.query(all_entries, 'Company3'), comp3_entries)
+        for entry in TimeEntry.query(all_entries, 'Company1'):
+            self.assertEqual(entry.company, 'Company1')
+        for entry in TimeEntry.query(all_entries, 'Company2'):
+            self.assertEqual(entry.company, 'Company2')
+        for entry in TimeEntry.query(all_entries, 'Company3'):
+            self.assertEqual(entry.company, 'Company3')
 
 
 class TestInvoicing(BaseClass):
