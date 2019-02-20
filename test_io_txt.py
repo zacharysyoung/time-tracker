@@ -34,13 +34,18 @@ class TestIO(BaseClassIO):
         invoice_name = io_txt.get_invoice_name(self.invoice)
         self.assertEqual(invoice_name, '20100101_20100113_Company1')
 
-    def testGetFullInvoicePath(self):
-        invoice_path = io_txt.get_full_invoice_path(self.invoice)
+    def testGetInvoicePath(self):
+        invoice_path = io_txt.get_invoice_path(self.invoice)
         self.assertEqual(invoice_path,
-                         'invoices/20100101_20100113_Company1.pkl')
+                         'io/fs/invoices/20100101_20100113_Company1.pkl')
 
+    def testGetReportPath(self):
+        invoice_path = io_txt.get_report_path(self.invoice)
+        self.assertEqual(invoice_path,
+                         'io/fs/reports/20100101_20100113_Company1.txt')
+        
     def testWriteInovice(self):
-        invoice_path = io_txt.get_full_invoice_path(self.invoice)
+        invoice_path = io_txt.get_invoice_path(self.invoice)
 
         if os.path.exists(invoice_path):
             del_path(invoice_path)
@@ -50,8 +55,22 @@ class TestIO(BaseClassIO):
 
         del_path(invoice_path)
 
+    def testOpenInvoice(self):
+        invoice_path = io_txt.get_invoice_path(self.invoice)
+
+        if os.path.exists(invoice_path):
+            del_path(invoice_path)
+            
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(invoice_path))
+
+        gotten_invoice = io_txt.open_invoice(invoice_path)
+        self.assertEqual(gotten_invoice, self.invoice)
+
+        del_path(invoice_path)
+        
     def testWriteAlreadyExistingInvoiceError(self):
-        invoice_p = io_txt.get_full_invoice_path(self.invoice)
+        invoice_p = io_txt.get_invoice_path(self.invoice)
 
         if os.path.exists(invoice_p):
             del_path(invoice_p)
@@ -66,28 +85,20 @@ class TestIO(BaseClassIO):
 
         del_path(invoice_p)
 
-    def testWriteInvoiceReport(self):
+    def testWriteReport(self):
         self.invoice.send()
 
-        # open named-temp file to get its path
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmppath = tmpfile.name
+        report_path = io_txt.get_report_path(self.invoice)
+        io_txt.write_report(self.invoice)
 
-        # close...
-        tmpfile.close()
-
-        # so other processes can open it
-        io_txt.write_invoice_report(self.invoice, tmppath)
-
-        # Assert file was written and contains some basic values
-        with open(tmppath, 'r') as f:
+        with open(report_path, 'r') as f:
             written_txt =  f.read()
             _entries = self.invoice.entries
             self.assertIn(_entries[0].message, written_txt)
             self.assertIn(
                 str(TimeEntry.get_hours_total(_entries)), written_txt)
 
-        del_path(tmppath)
+        del_path(report_path)
         
     def testParseEntryNote(self):
         def _test_parse(txt):
@@ -117,17 +128,6 @@ class TestIO(BaseClassIO):
         # errors
         with self.assertRaises(IndexError):
             _test_parse('')
-
-    def testReadWriteInvoice2(self):
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        tmppath = tmpfile.name
-        tmpfile.close()
-
-        io_txt.pickle(self.invoice, tmppath)
-        read_invoice = io_txt.unpickle(tmppath)
-        self.assertEqual(read_invoice, self.invoice)
-
-        del_path(tmppath)
 
     def testReadWriteEntry(self):
         tmpfile = tempfile.NamedTemporaryFile(delete=False)

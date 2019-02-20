@@ -42,3 +42,5 @@
    really specified, which makes me think I need to rethink how I
    write these TODOs.
 *** TODO Write invoiced entries to separate file(s) when an invoice is sent(?)
+    More generally write invoices and entries to files at any
+    time... based on a put(), and then get() or fetch()
