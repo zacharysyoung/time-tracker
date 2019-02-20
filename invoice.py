@@ -34,10 +34,10 @@ class Invoice(object):
         self.id = id(self)
 
     def __eq__(self, other):
-        return other.id == self.id
+        return other.id is self.id
 
     def __ne__(self, other):
-        return other.id != self.id
+        return other.id is not self.id
 
     def send(self):
         now = datetime.datetime.now()

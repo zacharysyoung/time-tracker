@@ -65,7 +65,10 @@ class TestIO(BaseClassIO):
         self.assertTrue(os.path.exists(invoice_path))
 
         gotten_invoice = io_txt.open_invoice(invoice_path)
-        self.assertEqual(gotten_invoice, self.invoice)
+        self.assertEqual(gotten_invoice.id, self.invoice.id)
+
+        for x, y in zip(gotten_invoice.entries, self.invoice.entries):
+            self.assertEqual(x.id, y.id)
 
         del_path(invoice_path)
         
@@ -138,7 +141,7 @@ class TestIO(BaseClassIO):
         entry_path = io_txt.get_entry_path(entry)
         io_txt.write_entry(entry)
         read_entry = io_txt.open_entry(entry_path)
-        self.assertEqual(read_entry, entry)
+        self.assertEqual(read_entry.id, entry.id)
 
         del_path(entry_path)
 

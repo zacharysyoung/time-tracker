@@ -28,10 +28,10 @@ class TimeEntry(object):
         self.id = id(self)
 
     def __eq__(self, other):
-        return other.id == self.id
+        return other.id is self.id
 
     def __ne__(self, other):
-        return other.id != self.id
+        return other.id is self.id
 
     def can_be_invoiced(self):
         return self.billable and not self.invoiced
