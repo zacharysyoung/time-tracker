@@ -1,15 +1,15 @@
 import os
 import cPickle
 
-def get_invoice_name(invoice):
+def get_report_name(invoice):
     return '{:%Y%m%d}_{:%Y%m%d}_{}'.format(
         invoice.payperiod_start, invoice.payperiod_end, invoice.company)
 
 def get_invoice_path(invoice):
-    return os.path.join('io/fs/invoices', get_invoice_name(invoice)) + '.pkl'
+    return 'io/fs/invoices/{}.pkl'.format(invoice.id)
 
 def get_report_path(invoice):
-    return os.path.join('io/fs/reports', get_invoice_name(invoice)) + '.txt'
+    return 'io/fs/reports/{}.txt'.format(get_report_name(invoice))
 
 def print_hours_for_ken(invoice):
     print_str = invoice.company + '\n'

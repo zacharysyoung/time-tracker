@@ -44,3 +44,7 @@
 *** TODO Write invoiced entries to separate file(s) when an invoice is sent(?)
     More generally write invoices and entries to files at any
     time... based on a put(), and then get() or fetch()
+*** TODO Change invoice to persist with only entries IDs
+    Saving the full entry inside the invoice surely is not a good
+    idea.  Store a list of IDs to the entries, and have some mechanism
+    to get entries by their ids.

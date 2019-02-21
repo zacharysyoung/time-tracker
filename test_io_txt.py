@@ -30,14 +30,24 @@ class BaseClassIO(unittest.TestCase):
 
 
 class TestIO(BaseClassIO):
-    def testGetInvoiceName(self):
-        invoice_name = io_txt.get_invoice_name(self.invoice)
+    def testGetReportName(self):
+        # Interesting, not sure if I should ever assert what the name
+        # is, but it's at least documentation of what the name can
+        # look like, if that's even necessary. Hmm, weird.  Maybe the
+        # function could be used by the UI to inform the user of the
+        # name of a given report, kinda like an export in Harvest
+        # resulting in an e-mail to the user with a link to download
+        # the PDF.  But, I cannot see the format or appearance of the
+        # name having any value... expect to maybe assert the name
+        # itself didn't sensitive information in it... so assert its
+        # text is a certain, neutral, way... curious, obviously
+        invoice_name = io_txt.get_report_name(self.invoice)
         self.assertEqual(invoice_name, '20100101_20100113_Company1')
 
     def testGetInvoicePath(self):
         invoice_path = io_txt.get_invoice_path(self.invoice)
         self.assertEqual(invoice_path,
-                         'io/fs/invoices/20100101_20100113_Company1.pkl')
+                         'io/fs/invoices/{}.pkl'.format(self.invoice.id) )
 
     def testGetReportPath(self):
         invoice_path = io_txt.get_report_path(self.invoice)
