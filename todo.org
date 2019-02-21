@@ -48,3 +48,11 @@
     Saving the full entry inside the invoice surely is not a good
     idea.  Store a list of IDs to the entries, and have some mechanism
     to get entries by their ids.
+    
+    What's the flow of entries and invoices?  For gen_invoice_task its
+    parse note.txt to entries; the entries are used to create an
+    invoice, attributes of the entries that are used are: hours for an
+    hours_total attribute, company to ensure all the entries are for
+    the same company, and job (id) to create the invoice's own job_ids
+    dict.  The invoice then uses the entries, finally (?), in the
+    send.
