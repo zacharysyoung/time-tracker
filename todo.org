@@ -56,3 +56,14 @@
     the same company, and job (id) to create the invoice's own job_ids
     dict.  The invoice then uses the entries, finally (?), in the
     send.
+
+    Yeah, so, Invoice will use the entries during init and then save
+    only the IDs.
+
+    I'm stimmied again by not knowing how invoice.send() gets its
+    entries in test... no way it makes sense to pass the invoice the
+    entries to send, i.e.: invoice.send(entries), when I just made the
+    invoice like invoice = Invoice(entries, ...).  So maybe invoice
+    does keep the entries for its lifetime.  When it's saved the
+    entries are discarded before pickling (in the case of io_txt) and
+    then after unpickling the invoice... wow, this is so confusing.

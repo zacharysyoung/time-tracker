@@ -18,8 +18,11 @@ class Invoice(object):
                 del(entries[i])
 
         self.entries = sorted(entries, key=lambda x: x.dt)
+
+        self.entry_ids = []
         self.job_ids = defaultdict(list)
         for entry in self.entries:
+            self.entry_ids.append(entry.id)
             self.job_ids[entry.job].append(entry)
 
         self.hours_total  = TimeEntry.get_hours_total(self.entries)

@@ -22,7 +22,7 @@ class BaseClass(unittest.TestCase):
             _te(1.0, _dt(2010,1,1), '1st entry', comp1, job1),
             _te(2.0, _dt(2010,1,2), '2nd entry', comp1, job2),
             _te(2.5, _dt(2019,1,3), '3rd entry', comp2, job3, billable=False),
-            _te(3.0, _dt(2019,2,4), '4th entry', comp2, job4)
+            _te(4.9, _dt(2019,2,4), '4th entry', comp2, job4)
         ]
 
         self.company1_jobs_dict = {job1: 'Job One', job2: 'Job Two'}
@@ -92,7 +92,10 @@ class TestInvoicing(BaseClass):
 
         filtered_entries = TimeEntry.query(self.entries, 'Company2')
         invoice = Invoice(filtered_entries, None, (None, None), self.company2_jobs)
-        self.assertEqual(invoice.hours_total, 3)
+        self.assertEqual(invoice.hours_total, 4.9)
+
+        filtered_entry_ids = [e.id for e in filtered_entries]
+        self.assertEqual(sorted(invoice.entry_ids), sorted(filtered_entry_ids))
 
     def testInvoicePayperiod(self):
         invoice = Invoice([],
