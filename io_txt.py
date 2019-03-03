@@ -113,11 +113,17 @@ def parse_entries_from_note(note_data, jobs):
     import csv
     import datetime
 
+    if not note_data.getvalue().strip():
+        raise ValueError('no data in note_data')
+    note_data.seek(0)
+
     reader = csv.reader(note_data, delimiter=',', quotechar='"')
     entries = []
     for row in reader:
         if not row:
             continue
+
+        _assert_field_count(row, 5)
 
         entries.append(TimeEntry(
             cast_float(row[0]),
@@ -127,6 +133,7 @@ def parse_entries_from_note(note_data, jobs):
             _job_id(row[4])
         )
         )
+
     return entries
 
 def get_entry_name(entry):

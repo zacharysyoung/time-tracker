@@ -140,11 +140,26 @@ class TestIO(BaseClassIO):
         _test_parse('1,1/1/10,"1st entry",Company1,job1')
 
         # test float
-        _test_parse('1.0,1/1/10,"1st entry",Company1,job1')
+        _test_parse('1.0,1/1/10,1st entry,Company1,job1')
+
+        # test empty row
+        _test_parse('1,1/1/10,1st entry,Company1,job1\n,,,,')
+
+        # test non-row
+        _test_parse('1,1/1/10,1st entry,Company1,job1\n\n')
 
         # errors
-        with self.assertRaises(IndexError):
-            _test_parse('')
+        self.assertRaisesRegexp(ValueError, 'no data', _test_parse, '')
+        self.assertRaisesRegexp(AssertionError,
+                                'Expected \d+ field\(s\) in row, got 1',
+                                _test_parse,
+                                'a'
+                                )
+        self.assertRaisesRegexp(AssertionError,
+                                'Expected \d+ field\(s\) in row, got 2',
+                                _test_parse,
+                                'a,b'
+                                )
 
     def testOpenEntry(self):
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
