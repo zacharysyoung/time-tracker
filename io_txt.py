@@ -1,7 +1,6 @@
 import os
 import cPickle
 
-
 def get_report_name(invoice):
     return '{:%Y%m%d}_{:%Y%m%d}_{}'.format(
         invoice.payperiod_start, invoice.payperiod_end, invoice.company)
