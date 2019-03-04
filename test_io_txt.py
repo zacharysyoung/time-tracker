@@ -14,105 +14,7 @@ from time_entry import TimeEntry
 _dt = datetime.datetime
 
 
-class BaseClassIO(unittest.TestCase):
-    def setUp(self):
-        super(BaseClassIO, self).setUp()
-
-        self.invoice = Invoice(
-            [
-                TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
-                TimeEntry(2.5, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
-            ],
-            _dt(2010,1,14),
-            (_dt(2010,1,1), _dt(2010,1,13)),
-            CompanyJobs('Company1', {'job1': 'Job One'}, 20)
-            )
-
-
-class TestIO(BaseClassIO):
-    def testGetReportName(self):
-        # Interesting, not sure if I should ever assert what the name
-        # is, but it's at least documentation of what the name can
-        # look like, if that's even necessary. Hmm, weird.  Maybe the
-        # function could be used by the UI to inform the user of the
-        # name of a given report, kinda like an export in Harvest
-        # resulting in an e-mail to the user with a link to download
-        # the PDF.  But, I cannot see the format or appearance of the
-        # name having any value... expect to maybe assert the name
-        # itself didn't sensitive information in it... so assert its
-        # text is a certain, neutral, way... curious, obviously
-        invoice_name = io_txt.get_report_name(self.invoice)
-        self.assertEqual(invoice_name, '20100101_20100113_Company1')
-
-    def testGetInvoicePath(self):
-        invoice_path = io_txt.get_invoice_path(self.invoice)
-        self.assertEqual(invoice_path,
-                         'io/fs/invoices/{}.pkl'.format(self.invoice.id) )
-
-    def testGetReportPath(self):
-        invoice_path = io_txt.get_report_path(self.invoice)
-        self.assertEqual(invoice_path,
-                         'io/fs/reports/20100101_20100113_Company1.txt')
-        
-    def testWriteInvoice(self):
-        invoice_path = io_txt.get_invoice_path(self.invoice)
-
-        if os.path.exists(invoice_path):
-            del_path(invoice_path)
-            
-        io_txt.write_invoice(self.invoice)
-        self.assertTrue(os.path.exists(invoice_path))
-
-        del_path(invoice_path)
-
-    def testOpenInvoice(self):
-        invoice_path = io_txt.get_invoice_path(self.invoice)
-
-        if os.path.exists(invoice_path):
-            del_path(invoice_path)
-            
-        io_txt.write_invoice(self.invoice)
-        self.assertTrue(os.path.exists(invoice_path))
-
-        gotten_invoice = io_txt.open_invoice(invoice_path)
-        self.assertEqual(gotten_invoice.id, self.invoice.id)
-
-        for x, y in zip(gotten_invoice.entries, self.invoice.entries):
-            self.assertEqual(x.id, y.id)
-
-        del_path(invoice_path)
-        
-    def testWriteAlreadyExistingInvoiceError(self):
-        invoice_p = io_txt.get_invoice_path(self.invoice)
-
-        if os.path.exists(invoice_p):
-            del_path(invoice_p)
-
-        io_txt.write_invoice(self.invoice)
-        self.assertTrue(os.path.exists(invoice_p))
-
-        with self.assertRaises(IOError) as e:
-            io_txt.write_invoice(self.invoice)
-            self.assertEqual(e.errno, 1024)
-            self.assertEqual(e.strerror, 'File already exists: %s' % invoice_p)
-
-        del_path(invoice_p)
-
-    def testWriteReport(self):
-        self.invoice.send()
-
-        report_path = io_txt.get_report_path(self.invoice)
-        io_txt.write_report(self.invoice)
-
-        with open(report_path, 'r') as f:
-            written_txt =  f.read()
-            _entries = self.invoice.entries
-            self.assertIn(_entries[0].message, written_txt)
-            self.assertIn(
-                str(TimeEntry.get_hours_total(_entries)), written_txt)
-
-        del_path(report_path)
-        
+class TestInvoiceParsing(unittest.TestCase):
     def testParseEntryNote(self):
         def _test_parse(txt):
             parsed_entries = io_txt.parse_entries_from_note(
@@ -161,6 +63,101 @@ class TestIO(BaseClassIO):
                                 'a,b'
                                 )
 
+
+class BaseClassIO(unittest.TestCase):
+    def setUp(self):
+        super(BaseClassIO, self).setUp()
+
+        self.invoice = Invoice(
+            [
+                TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
+                TimeEntry(2.5, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
+            ],
+            _dt(2010,1,14),
+            (_dt(2010,1,1), _dt(2010,1,13)),
+            CompanyJobs('Company1', {'job1': 'Job One'}, 20)
+            )
+
+class TestPathsAndNames(BaseClassIO):
+    def testGetReportName(self):
+        # Interesting, not sure if I should ever assert what the name
+        # is, but it's at least documentation of what the name can
+        # look like, if that's even necessary. Hmm, weird.  Maybe the
+        # function could be used by the UI to inform the user of the
+        # name of a given report, kinda like an export in Harvest
+        # resulting in an e-mail to the user with a link to download
+        # the PDF.  But, I cannot see the format or appearance of the
+        # name having any value... expect to maybe assert the name
+        # itself didn't sensitive information in it... so assert its
+        # text is a certain, neutral, way... curious, obviously
+        invoice_name = io_txt.get_report_name(self.invoice)
+        self.assertEqual(invoice_name, '20100101_20100113_Company1')
+    
+    def testGetReportPath(self):
+        report_path = io_txt.get_report_path(self.invoice)
+        self.assertEqual(report_path,
+                         'io/fs/reports/20100101_20100113_Company1.txt')
+
+    def testGetInvoicePath(self):
+        invoice_path = io_txt.get_invoice_path(self.invoice)
+        self.assertEqual(invoice_path,
+                         'io/fs/invoices/{}.pkl'.format(self.invoice.id) )
+
+
+class TestInvoiceOpenWrite(BaseClassIO):
+    def setUp(self):
+        super(TestInvoiceOpenWrite, self).setUp()
+
+        self.invoice_path = io_txt.get_invoice_path(self.invoice)
+        if os.path.exists(self.invoice_path):
+            del_path(self.invoice_path)
+
+    def tearDown(self):
+        super(TestInvoiceOpenWrite, self).tearDown()
+
+        del_path(self.invoice_path)
+
+    def testWriteInvoice(self):            
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(self.invoice_path))
+
+    def testOpenInvoice(self):
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(self.invoice_path))
+
+        gotten_invoice = io_txt.open_invoice(self.invoice_path)
+        self.assertEqual(gotten_invoice.id, self.invoice.id)
+
+        for x, y in zip(gotten_invoice.entries, self.invoice.entries):
+            self.assertEqual(x.id, y.id)
+
+    def testWriteAlreadyExistingInvoiceError(self):
+        io_txt.write_invoice(self.invoice)
+        self.assertTrue(os.path.exists(self.invoice_path))
+
+        with self.assertRaises(IOError) as e:
+            io_txt.write_invoice(self.invoice)
+            self.assertEqual(e.errno, 1024)
+            self.assertEqual(e.strerror, 'File already exists: %s' % invoice_p)
+
+
+class TestReportOpenWrite(BaseClassIO):
+    def testWriteReport(self):
+        self.invoice.send()
+
+        report_path = io_txt.get_report_path(self.invoice)
+        io_txt.write_report(self.invoice)
+
+        with open(report_path, 'r') as f:
+            written_txt =  f.read()
+            _entries = self.invoice.entries
+            self.assertIn(_entries[0].message, written_txt)
+            self.assertIn(
+                str(TimeEntry.get_hours_total(_entries)), written_txt)
+
+        del_path(report_path)
+        
+class TestEntryOpenWrite(BaseClassIO):
     def testOpenEntry(self):
         entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
         entry_path = io_txt.get_entry_path(entry)
