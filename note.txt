@@ -2,3 +2,15 @@
 1,2/11/19,brushed snow off greenhouse,ff,common
 1.25,2/11/19,brushed 3/4 of snow off smaller-of-two,ff,common
 1.25,2/12/19,"fixed red broom with extendo-stick, brushed snow off",ff,common
+3,2/18/19,"shoveled snow around job site; started back on house-side of sauna roof; pre-cut flashing and tar paper",ff,common
+1,2/20/19,"put up another course",ff,common
+3,2/21/19,"put up another course",ff,common
+5,2/25/19,"finished roof!",ff,common
+.75,2/27/19,"propane run, 27.1 gals",ff,common
+.16,2/28/19,chickens and cats,ff,animal
+.16,3/1/19,chickens and cats,ff,animal
+.16,3/2/19,chickens and cats,ff,animal
+.16,3/3/19,chickens and cats,ff,animal
+2,3/3/19,"sorted shakes and shingles on porch; started first course on awning but Robert advised using a different method, which I went for",ff,common
+2,3/4/19,"tried alternative method but there was a problem with making gaps from short shingles, ended pulling all shingles down again",ff,common
+4,3/5/19,finished all of house-side awning,ff,common
