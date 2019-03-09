@@ -113,7 +113,7 @@ def parse_entries_from_note(note_data, jobs):
     import csv
     import datetime
 
-    if not note_data.getvalue().strip():
+    if not note_data.read().strip():
         raise ValueError('no data in note_data')
     note_data.seek(0)
 

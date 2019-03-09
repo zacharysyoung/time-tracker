@@ -23,8 +23,10 @@ def main(company, print_txt=True):
 
     invoice_path = io_txt.get_invoice_path(invoice)
     report_path = io_txt.get_report_path(invoice)
-    io_txt.write_invoice(invoice, invoice_path)
-    io_txt.write_report(invoice, report_path)
+    io_txt.write_invoice(invoice)
+    io_txt.write_report(invoice)
+
+    return invoice_path, report_path
 
 def gen_invoice_task(company, jobs_dict, note_data):
     company_name, payment_dt, pay_period, wage = company

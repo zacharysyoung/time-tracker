@@ -208,6 +208,8 @@ total: 3.5
 """
         )
 
+
+class TestGenInvoice(unittest.TestCase):
     def testTaskWithMockData(self):
         import gen_invoice_task
         company1_jobs_dict = {'job1': 'Job One', 'job2': 'Job Two'}
@@ -239,6 +241,15 @@ total: 3
         )
         self.assertEqual(io_txt.print_hours_for_ken(invoice), invoice_txt)
 
+    def testRealRun(self):
+        import file_util
+        import gen_invoice_task
+
+        invoice_path, report_path = gen_invoice_task.main(gen_invoice_task.ff)
+
+        file_util.del_path(invoice_path)
+        file_util.del_path(report_path)
+        
 
 class TestFileOperations(unittest.TestCase):
     def testAppendFile(self):

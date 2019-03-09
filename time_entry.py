@@ -1,3 +1,5 @@
+import uuid
+
 class TimeEntry(object):
     @classmethod
     def get_hours_total(cls, entries):
@@ -25,7 +27,7 @@ class TimeEntry(object):
         self.invoiced = False
         self.company = company
         self.job = job
-        self.id = id(self)
+        self.id = uuid.uuid1().hex
 
     def __eq__(self, other):
         return other.id is self.id

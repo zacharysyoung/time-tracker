@@ -136,7 +136,33 @@ class TestInvoicing(BaseClass):
             self.assertEqual(entry.invoiced_dt, invoice.invoiced_dt)
 
         self.assertTrue(invoice.sent)
-        
+
+    def testIdCollisions(self):
+        """Using something other than self(id), right now uuid1().
+
+           I was using self.id = id(self) for ID, which would make for
+           a collison in about 10 iterations of the following loop.
+           Noticed this problem as an intermittent
+           already-exists-error in:
+
+             test_io:TestGenInvoice.testRealRun()
+
+        """
+        ids = []
+        for i in range(100):
+            invoice = Invoice(
+            [
+                TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
+                TimeEntry(2.5, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
+            ],
+            _dt(2010,1,14),
+            (_dt(2010,1,1), _dt(2010,1,13)),
+            CompanyJobs('Company1', {'job1': 'Job One'}, 20)
+            )
+            self.assertNotIn(invoice.id, ids)
+            ids.append(invoice.id)
+
+
 class TestCompanyJobs(unittest.TestCase):
     def testCompanyJobs(self):
         company1_jobs_dict = {

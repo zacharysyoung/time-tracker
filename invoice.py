@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from collections import defaultdict
 
@@ -34,7 +35,7 @@ class Invoice(object):
         self.payperiod_start = pay_period[0]
         self.payperiod_end = pay_period[1]
         self.jobs = jobs
-        self.id = id(self)
+        self.id = uuid.uuid1().hex
 
     def __eq__(self, other):
         return other.id is self.id
