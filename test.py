@@ -83,6 +83,26 @@ class TestTimeEntries(BaseClass):
         for entry in TimeEntry.query(all_entries, 'Company3'):
             self.assertEqual(entry.company, 'Company3')
 
+    def testFilterEntriesByDate(self):
+        e1 = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+        e2 = TimeEntry(1, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
+        e3 = TimeEntry(1, _dt(2010,1,3), '3rd entry', 'Company1', 'job1')
+
+        self.assertEqual(
+            TimeEntry.filter_by_date([e1], _dt(2010,1,1), _dt(2010,1,1)),
+            [e1]
+            )
+
+        self.assertEqual(
+            TimeEntry.filter_by_date([e1, e2, e3], _dt(2010,1,1), _dt(2010,1,1)),
+            [e1]
+            )
+
+        # With date range in February, all January entries are filtered out
+        self.assertEqual(
+            TimeEntry.filter_by_date([e1, e2, e3], _dt(2010,2,1), _dt(2010,2,3)),
+            []
+            )
 
 class TestInvoicing(BaseClass):
     def testCreateInvoice(self):

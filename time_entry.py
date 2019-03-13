@@ -19,6 +19,14 @@ class TimeEntry(object):
                 _entries.append(entry)
         return _entries
 
+    @classmethod
+    def filter_by_date(cls, entries, period_start, period_end):
+        _entries = []
+        for entry in entries:
+            if entry.dt >= period_start and entry.dt <= period_end:
+                _entries.append(entry)
+        return _entries
+
     def __init__(self, hours, dt, message, company, job, billable=True):
         self.hours = hours
         self.dt = dt

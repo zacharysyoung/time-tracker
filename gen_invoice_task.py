@@ -34,6 +34,7 @@ def gen_invoice_task(company, jobs_dict, note_data):
 
     entries = io_txt.parse_entries_from_note(note_data, jobs)
     entries = TimeEntry.query(entries, company[0])
+    entries = TimeEntry.filter_by_date(entries, *pay_period)
 
     invoice = Invoice(
         entries,

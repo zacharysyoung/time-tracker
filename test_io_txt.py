@@ -234,8 +234,10 @@ total: 3
 """
 
         invoice = gen_invoice_task.gen_invoice_task(
-            ('Company1', _dt(2019,2,18,17,0),
-             (_dt(2019,2,3), _dt(2019,2,17)), 20),
+            'Company1',
+            _dt(2019,2,18,17,0),
+            (_dt(2019,2,1), _dt(2019,2,14)),
+            20,
             company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )
