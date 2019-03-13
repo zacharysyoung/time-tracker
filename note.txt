@@ -14,3 +14,5 @@
 2,3/3/19,"sorted shakes and shingles on porch; started first course on awning but Robert advised using a different method, which I went for",ff,common
 2,3/4/19,"tried alternative method but there was a problem with making gaps from short shingles, ended pulling all shingles down again",ff,common
 4,3/5/19,finished all of house-side awning,ff,common
+5,3/10/19,did all but last course on contoured side of awning,ff,common
+2,3/11/19,"finished last course on awning, blew all sawdust and scraps off and out of roof before rain; cleaned most debris off ground",ff,common
