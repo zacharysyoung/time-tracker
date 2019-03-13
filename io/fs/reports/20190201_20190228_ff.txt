@@ -1,0 +1,35 @@
+ff
+Animal Care:
+Th 02/28/19: 0.16
+----
+total: 0.16
+
+Common Buildings, Grounds, Roads:
+Fr 02/08/19: 1
+Mo 02/11/19: 1
+Mo 02/11/19: 1.25
+Tu 02/12/19: 1.25
+Mo 02/18/19: 3
+We 02/20/19: 1
+Th 02/21/19: 3
+Mo 02/25/19: 5
+We 02/27/19: 0.75
+----
+total: 17.25
+
+----
+total: 17.41
+
+| 1 | 02/08/19 | brushed snow off greenhouse | ff | common |
+| 1 | 02/11/19 | brushed snow off greenhouse | ff | common |
+| 1.25 | 02/11/19 | brushed 3/4 of snow off smaller-of-two | ff | common |
+| 1.25 | 02/12/19 | fixed red broom with extendo-stick, brushed snow off | ff | common |
+| 3 | 02/18/19 | shoveled snow around job site; started back on house-side of sauna roof; pre-cut flashing and tar paper | ff | common |
+| 1 | 02/20/19 | put up another course | ff | common |
+| 3 | 02/21/19 | put up another course | ff | common |
+| 5 | 02/25/19 | finished roof! | ff | common |
+| 0.75 | 02/27/19 | propane run, 27.1 gals | ff | common |
+| 0.16 | 02/28/19 | chickens and cats | ff | animal |
+
+Total: 17.41 | Invoiced: 2019-03-13 13:44:50.443035 | Payment due: 2019-03-01 17:00:00 | Gross $: 0.0
+----
