@@ -18,7 +18,8 @@ def main(company, print_txt=True):
     config.readfp(open('jobs.ini', 'r'))
     jobs_dict = dict(config.items(company[0]))
     note_data = open('note.txt', 'r')
-    invoice = gen_invoice_task(company, jobs_dict, note_data)
+    company_name, payment_dt, pay_period, wage = company
+    invoice = gen_invoice_task(company_name, payment_dt, pay_period, wage, jobs_dict, note_data)
     invoice.send()
 
     invoice_path = io_txt.get_invoice_path(invoice)
@@ -28,18 +29,17 @@ def main(company, print_txt=True):
 
     return invoice_path, report_path
 
-def gen_invoice_task(company, jobs_dict, note_data):
-    company_name, payment_dt, pay_period, wage = company
-    jobs = CompanyJobs(company[0], jobs_dict, wage)
+def gen_invoice_task(company_name, payment_dt, pay_period, wage, jobs_dict, note_data):
+    jobs = CompanyJobs(company_name, jobs_dict, wage)
 
     entries = io_txt.parse_entries_from_note(note_data, jobs)
-    entries = TimeEntry.query(entries, company[0])
+    entries = TimeEntry.query(entries, company_name)
     entries = TimeEntry.filter_by_date(entries, *pay_period)
 
     invoice = Invoice(
         entries,
-        company[1],
-        company[2],
+        payment_dt,
+        pay_period,
         jobs)
 
     return invoice
