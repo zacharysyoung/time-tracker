@@ -241,16 +241,7 @@ total: 3
         )
         self.assertEqual(io_txt.print_hours_for_ken(invoice), invoice_txt)
 
-    def testRealRun(self):
-        import file_util
-        import gen_invoice_task
-
-        invoice_path, report_path = gen_invoice_task.main(gen_invoice_task.ff)
-
-        file_util.del_path(invoice_path)
-        file_util.del_path(report_path)
         
-
 class TestFileOperations(unittest.TestCase):
     def testAppendFile(self):
         import os
