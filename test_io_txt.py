@@ -22,7 +22,7 @@ class TestInvoiceParsing(unittest.TestCase):
             )
             parsed_entry = parsed_entries[0]
             self.assertEqual(parsed_entry.hours, 1)
-            self.assertEqual(parsed_entry.dt, _dt(2010,1,1))
+            self.assertEqual(parsed_entry.dt, _dt(2010, 1, 1))
             self.assertEqual(parsed_entry.message, '1st entry')
             self.assertEqual(parsed_entry.company, 'Company1')
             self.assertEqual(parsed_entry.job, 'job1')
@@ -52,16 +52,18 @@ class TestInvoiceParsing(unittest.TestCase):
 
         # errors
         self.assertRaisesRegexp(ValueError, 'no data', _test_parse, '')
-        self.assertRaisesRegexp(AssertionError,
-                                'Expected \d+ field\(s\) in row, got 1',
-                                _test_parse,
-                                'a'
-                                )
-        self.assertRaisesRegexp(AssertionError,
-                                'Expected \d+ field\(s\) in row, got 2',
-                                _test_parse,
-                                'a,b'
-                                )
+        self.assertRaisesRegexp(
+            AssertionError,
+            r'Expected \d+ field\(s\) in row, got 1',
+            _test_parse,
+            'a'
+        )
+        self.assertRaisesRegexp(
+            AssertionError,
+            r'Expected \d+ field\(s\) in row, got 2',
+            _test_parse,
+            'a,b'
+        )
 
 
 class BaseClassIO(unittest.TestCase):
@@ -70,11 +72,11 @@ class BaseClassIO(unittest.TestCase):
 
         self.invoice = Invoice(
             [
-                TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1'),
-                TimeEntry(2.5, _dt(2010,1,2), '2nd entry', 'Company1', 'job1')
+                TimeEntry(1, _dt(2010, 1, 1), '1st entry', 'Company1', 'job1'),
+                TimeEntry(2.5, _dt(2010, 1, 2), '2nd entry', 'Company1', 'job1')
             ],
-            _dt(2010,1,14),
-            (_dt(2010,1,1), _dt(2010,1,13)),
+            _dt(2010, 1, 14),
+            (_dt(2010, 1, 1), _dt(2010, 1, 13)),
             CompanyJobs('Company1', {'job1': 'Job One'}, 20)
             )
 
@@ -92,7 +94,7 @@ class TestPathsAndNames(BaseClassIO):
         # text is a certain, neutral, way... curious, obviously
         invoice_name = io_txt.get_report_name(self.invoice)
         self.assertEqual(invoice_name, '20100101_20100113_Company1')
-    
+
     def testGetReportPath(self):
         report_path = io_txt.get_report_path(self.invoice)
         self.assertEqual(report_path,
@@ -100,8 +102,10 @@ class TestPathsAndNames(BaseClassIO):
 
     def testGetInvoicePath(self):
         invoice_path = io_txt.get_invoice_path(self.invoice)
-        self.assertEqual(invoice_path,
-                         'io/fs/invoices/{}.pkl'.format(self.invoice.id) )
+        self.assertEqual(
+            invoice_path,
+            'io/fs/invoices/{}.pkl'.format(self.invoice.id)
+        )
 
 
 class TestInvoiceOpenWrite(BaseClassIO):
@@ -117,7 +121,7 @@ class TestInvoiceOpenWrite(BaseClassIO):
 
         del_path(self.invoice_path)
 
-    def testWriteInvoice(self):            
+    def testWriteInvoice(self):
         io_txt.write_invoice(self.invoice)
         self.assertTrue(os.path.exists(self.invoice_path))
 
@@ -137,8 +141,11 @@ class TestInvoiceOpenWrite(BaseClassIO):
 
         with self.assertRaises(IOError) as e:
             io_txt.write_invoice(self.invoice)
-            self.assertEqual(e.errno, 1024)
-            self.assertEqual(e.strerror, 'File already exists: %s' % invoice_p)
+
+        self.assertEqual(e.exception.errno, 1024)
+        self.assertEqual(
+            e.exception.strerror, 'File already exists: %s' % self.invoice_path
+        )
 
 
 class TestReportOpenWrite(BaseClassIO):
@@ -149,17 +156,17 @@ class TestReportOpenWrite(BaseClassIO):
         io_txt.write_report(self.invoice)
 
         with open(report_path, 'r') as f:
-            written_txt =  f.read()
+            written_txt = f.read()
             _entries = self.invoice.entries
             self.assertIn(_entries[0].message, written_txt)
             self.assertIn(
                 str(TimeEntry.get_hours_total(_entries)), written_txt)
 
         del_path(report_path)
-        
+
 class TestEntryOpenWrite(BaseClassIO):
     def testOpenEntry(self):
-        entry = TimeEntry(1, _dt(2010,1,1), '1st entry', 'Company1', 'job1')
+        entry = TimeEntry(1, _dt(2010, 1, 1), '1st entry', 'Company1', 'job1')
         entry_path = io_txt.get_entry_path(entry)
         io_txt.write_entry(entry)
         read_entry = io_txt.open_entry(entry_path)
@@ -178,23 +185,15 @@ class TestPrinting(BaseClassIO):
 Total: 3.5 | Invoiced: {} | Payment due: 2010-01-14 00:00:00 | Gross $: 70.0
 ----
 """.format(self.invoice.invoiced_dt)
-        
+
         self.assertEqual(
             io_txt.print_entries(self.invoice).splitlines(),
             printed_txt.strip().splitlines()
         )
 
     def testPrintInvoiceForTextingToKen(self):
-        invoice = Invoice(
-            [TimeEntry(1, _dt(2010,1,1), None, 'Company1', 'job1'),
-             ],
-            None,
-            (_dt(2010,1,1), _dt(2010,1,13)),
-            CompanyJobs('Company1', {'job1': 'Job One'}, None)
-        )
-        txt = io_txt.print_hours_for_ken(self.invoice)
         self.assertEqual(
-            txt,
+            io_txt.print_hours_for_ken(self.invoice),
             """Company1
 Job One:
 Fr 01/01/10: 1
@@ -235,19 +234,17 @@ total: 3
 
         invoice = gen_invoice_task.gen_invoice_task(
             'Company1',
-            _dt(2019,2,18,17,0),
-            (_dt(2019,2,1), _dt(2019,2,14)),
+            _dt(2019, 2, 18, 17, 0),
+            (_dt(2019, 2, 1), _dt(2019, 2, 14)),
             20,
             company1_jobs_dict,
             StringIO.StringIO(note_txt)
         )
         self.assertEqual(io_txt.print_hours_for_ken(invoice), invoice_txt)
 
-        
+
 class TestFileOperations(unittest.TestCase):
     def testAppendFile(self):
-        import os
-
         import file_util
 
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -266,10 +263,6 @@ class TestFileOperations(unittest.TestCase):
         del_path(tmpname)
 
     def testDeletePath(self):
-        import os
-
-        import file_util
-
         # Test invalid deletes after system deletes file on f.close()
         f = tempfile.NamedTemporaryFile(delete=True)
         f.close()
@@ -278,7 +271,7 @@ class TestFileOperations(unittest.TestCase):
             del_path(invalid_path)
 
         self.assertIsNone(del_path(invalid_path, ignore_error=2))
-        
+
         # Test real delete; system does not delete on close: delete=False
         f = tempfile.NamedTemporaryFile(delete=False)
         f.close()
