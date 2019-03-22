@@ -6,3 +6,5 @@
 4,3/5/19,finished all of house-side awning,ff,common
 5,3/10/19,did all but last course on contoured side of awning,ff,common
 2,3/11/19,"finished last course on awning, blew all sawdust and scraps off and out of roof before rain; cleaned debris off ground",ff,common
+6,3/17/19,added extension to contoured-side to cover poles; stained 4 sides,ff,common
+3.75,3/18/19,finished staining: awning and 2 remaining sides,ff,common
