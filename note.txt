@@ -1,10 +1,11 @@
 .16,3/1/19,chickens and cats,ff,animal
 .16,3/2/19,chickens and cats,ff,animal
 .16,3/3/19,chickens and cats,ff,animal
-2,3/3/19,"sorted shakes on porch; started first course on awning, but changed mind and pulled all shakes down",ff,common
+2,3/3/19,"sorted shakes on porch; started first course on house-side of awning, but changed mind and pulled all shakes down",ff,common
 2,3/4/19,"started again with short shakes but wasn't mindful of making gaps, pulled all shakes down, again",ff,common
 4,3/5/19,finished all of house-side awning,ff,common
 5,3/10/19,did all but last course on contoured side of awning,ff,common
 2,3/11/19,"finished last course on awning, blew all sawdust and scraps off and out of roof before rain; cleaned debris off ground",ff,common
 6,3/17/19,added extension to contoured-side to cover poles; stained 4 sides,ff,common
 3.75,3/18/19,finished staining: awning and 2 remaining sides,ff,common
+4,3/27/19,made 4 hip-caps,ff,common
