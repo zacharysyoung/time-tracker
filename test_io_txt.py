@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import datetime
 import os
 import StringIO
@@ -15,6 +17,16 @@ _dt = datetime.datetime
 
 
 class TestInvoiceParsing(unittest.TestCase):
+    def testReplaceFancyQuotesInFile(self):
+        fancy_line = '”shingled 2 courses\n'
+        normal_line = '"shingled 2 courses\n'
+
+        fancy_file = StringIO.StringIO(fancy_line)
+        normal_file = io_txt.replace_in_file(fancy_file)
+
+        self.assertEqual(normal_line, normal_file.read())
+        
+
     def testParseEntryNote(self):
         def _test_parse(txt):
             parsed_entries = io_txt.parse_entries_from_note(
@@ -47,8 +59,11 @@ class TestInvoiceParsing(unittest.TestCase):
         # test empty row
         _test_parse('1,1/1/10,1st entry,Company1,job1\n,,,,')
 
-        # test non-row
+        # test non-row (double newline)
         _test_parse('1,1/1/10,1st entry,Company1,job1\n\n')
+
+        # test fancy quotes
+        _test_parse('1,1/1/10,”1st entry”,Company1,job1\n')
 
         # errors
         self.assertRaisesRegexp(ValueError, 'no data', _test_parse, '')

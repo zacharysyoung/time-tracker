@@ -1,5 +1,20 @@
 import os
+import StringIO
 import cPickle
+
+def replace_in_file(old_f, encoding='utf-8'):
+    """Just replacing fancy quotes, for now."""
+    new_f = StringIO.StringIO()
+    for old_line in old_f:
+        new_f.write(
+            old_line.\
+              decode(encoding).\
+              replace(u'\u201c', '"').\
+              replace(u'\u201d', '"').\
+              encode(encoding)
+        )
+    new_f.seek(0)
+    return new_f
 
 def get_report_name(invoice):
     return '{:%Y%m%d}_{:%Y%m%d}_{}'.format(
@@ -116,6 +131,8 @@ def parse_entries_from_note(note_data, jobs):
     if not note_data.read().strip():
         raise ValueError('no data in note_data')
     note_data.seek(0)
+
+    note_data = replace_in_file(note_data)
 
     reader = csv.reader(note_data, delimiter=',', quotechar='"')
     entries = []
