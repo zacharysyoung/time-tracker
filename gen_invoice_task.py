@@ -11,13 +11,14 @@ from time_entry import TimeEntry
 _dt = datetime.datetime
 
 ff = ('ff', _dt(2019,4,1, 17, 0), (_dt(2019,3,1), _dt(2019,3,31)), 0)
-cch = ('cch', _dt(2019,3,4, 17, 0), (_dt(2019,2,18), _dt(2019,3,3)), 20)
+cch = ('cch', _dt(2019,4,15, 17, 0), (_dt(2019,4,1), _dt(2019,4,14)), 20)
 
 def main(company, print_txt=True):
     config = ConfigParser.ConfigParser()
     config.readfp(open('jobs.ini', 'r'))
     jobs_dict = dict(config.items(company[0]))
     note_data = open('note.txt', 'r')
+    note_data.read().decode('utf-16')
     company_name, payment_dt, pay_period, wage = company
     invoice = gen_invoice_task(company_name, payment_dt, pay_period, wage, jobs_dict, note_data)
     invoice.send()
@@ -45,4 +46,4 @@ def gen_invoice_task(company_name, payment_dt, pay_period, wage, jobs_dict, note
     return invoice
 
 if __name__ == '__main__':
-    main(ff)
+    main(cch)
