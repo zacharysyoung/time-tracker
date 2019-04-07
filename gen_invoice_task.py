@@ -18,7 +18,6 @@ def main(company, print_txt=True):
     config.readfp(open('jobs.ini', 'r'))
     jobs_dict = dict(config.items(company[0]))
     note_data = open('note.txt', 'r')
-    note_data.read().decode('utf-16')
     company_name, payment_dt, pay_period, wage = company
     invoice = gen_invoice_task(company_name, payment_dt, pay_period, wage, jobs_dict, note_data)
     invoice.send()
