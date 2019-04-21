@@ -1,0 +1,29 @@
+cch
+Hudaceck:
+Sa 04/20/19: 9
+----
+total: 9
+
+LaSorella:
+Th 04/18/19: 7
+Fr 04/19/19: 4.5
+----
+total: 11.5
+
+McElhose:
+Mo 04/15/19: 8
+Tu 04/16/19: 5
+----
+total: 13
+
+----
+total: 33.5
+
+| 8 | 04/15/19 | started on finishing roof brackets, over southern pitch of breezeway roof, but ran into some geometry issues, after discussing with Arnie and Robert we deferred till roofer can give us a spec on rigid insulation thickness; worked with Robert to install gable trim boards; helped layout holes for footings for steps, dug some holes; salvaged wood, cut it, and then assembled box forms for footings | cch | mcel |
+| 5 | 04/16/19 | helped finish footing layout; back to roof brackets for a bit; moved cement bags; appropriated water; mixed and poured 3 footings | cch | mcel |
+| 7 | 04/18/19 | shingled back porch up to ceiling decking | cch | lasor |
+| 4.5 | 04/19/19 | Fri-dee Tidy | cch | lasor |
+| 9 | 04/20/19 | framing; cleaning | cch | hud |
+
+Total: 33.5 | Invoiced: 2019-04-21 14:09:10.585462 | Payment due: 2019-04-29 17:00:00 | Gross $: 670.0
+----

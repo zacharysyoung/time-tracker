@@ -11,7 +11,7 @@ from time_entry import TimeEntry
 _dt = datetime.datetime
 
 ff = ('ff', _dt(2019,4,1, 17, 0), (_dt(2019,3,1), _dt(2019,3,31)), 0)
-cch = ('cch', _dt(2019,4,15, 17, 0), (_dt(2019,4,1), _dt(2019,4,14)), 20)
+cch = ('cch', _dt(2019,4,29, 17, 0), (_dt(2019,4,15), _dt(2019,4,28)), 20)
 
 def main(company, print_txt=True):
     config = ConfigParser.ConfigParser()

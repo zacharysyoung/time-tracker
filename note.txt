@@ -16,3 +16,13 @@
 8,4/4/19,”finished loft subfloor; made and installed triangle for northern gable, installed wings on southern gable; finished nailing wall sheathing around breezeway; installed cedar supports for metal brackets, cut more supports”,cch,McElhose
 6,4/5/19,installed most metal brackets;finished nailing wall sheathing around gable tops; measured and snapped lines for rafter braces,cch,McElhose
 6.5,4/6/19,”shingled 2 courses on west wall, up near soffit”,cch,lasor
+7.5,4/8/19,”ran errands to LaSorellas; installed shear strips around southern windows; installed brackets for rafters and blocks; cut and helped install car-decking”,cch,McElhose
+8,4/9/19,”finished brackets for rafters and blocks; finished cutting and installing decking for breezeway”,cch,McElhose
+5.5,4/10/19,install sheathing for breezeway and dried-it-in; installed rafter braces; cut blocking and pony-wall sheathing for breezeway,cch,McElhose
+7,4/11/19,”errand to MVBS, picked up cedar boards for overhangs; helped fix wonky brackets and finished mounting cedar boards; helped install big brackets on south wall, started to install cedar boards for those brackets but ran out of screws”,cch,McElhose
+6,4/12/19,”errand to MVBS, picked up screws; finished installing cedar boards; broke down scaffolding; infilled some small triangles for breezeway; moved boards to clear workspace”,cch,McElhose
+8,4/15/19,”started on finishing roof brackets, over southern pitch of breezeway roof, but ran into some geometry issues, after discussing with Arnie and Robert we deferred till roofer can give us a spec on rigid insulation thickness; worked with Robert to install gable trim boards; helped layout holes for footings for steps, dug some holes; salvaged wood, cut it, and then assembled box forms for footings”,cch,McElhose
+5,4/16/19,helped finish footing layout; back to roof brackets for a bit; moved cement bags; appropriated water; mixed and poured 3 footings,cch,McElhose
+7,4/18/19,shingled back porch up to ceiling decking,cch,LaSorella
+4.5,4/19/19,Fri-dee Tidy,cch,LaSorella
+9,4/20/19,framing; cleaning,cch,Hudaceck

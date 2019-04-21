@@ -1,0 +1,37 @@
+cch
+LaSorella:
+Sa 04/06/19: 6.5
+----
+total: 6.5
+
+McElhose:
+Mo 04/01/19: 8
+Tu 04/02/19: 8
+We 04/03/19: 6.5
+Th 04/04/19: 8
+Fr 04/05/19: 6
+Mo 04/08/19: 7.5
+Tu 04/09/19: 8
+We 04/10/19: 5.5
+Th 04/11/19: 7
+Fr 04/12/19: 6
+----
+total: 70.5
+
+----
+total: 77
+
+| 8 | 04/01/19 | built and installed posts for breezeway ridge beam;helped install big ridge beam;measured rafters and cut about 15 rafters and blocks | cch | mcel |
+| 8 | 04/02/19 | finished cutting rafters and blocks; installed blocks; sheathed west roof | cch | mcel |
+| 6.5 | 04/03/19 | sheathed east roof; nailed bottom tabs of rafter brackets; took down bracing; started to finish loft subfloor | cch | mcel |
+| 8 | 04/04/19 | finished loft subfloor; made and installed triangle for northern gable, installed wings on southern gable; finished nailing wall sheathing around breezeway; installed cedar supports for metal brackets, cut more supports | cch | mcel |
+| 6 | 04/05/19 | installed most metal brackets;finished nailing wall sheathing around gable tops; measured and snapped lines for rafter braces | cch | mcel |
+| 6.5 | 04/06/19 | shingled 2 courses on west wall, up near soffit | cch | lasor |
+| 7.5 | 04/08/19 | ran errands to LaSorellas; installed shear strips around southern windows; installed brackets for rafters and blocks; cut and helped install car-decking | cch | mcel |
+| 8 | 04/09/19 | finished brackets for rafters and blocks; finished cutting and installing decking for breezeway | cch | mcel |
+| 5.5 | 04/10/19 | install sheathing for breezeway and dried-it-in; installed rafter braces; cut blocking and pony-wall sheathing for breezeway | cch | mcel |
+| 7 | 04/11/19 | errand to MVBS, picked up cedar boards for overhangs; helped fix wonky brackets and finished mounting cedar boards; helped install big brackets on south wall, started to install cedar boards for those brackets but ran out of screws | cch | mcel |
+| 6 | 04/12/19 | errand to MVBS, picked up screws; finished installing cedar boards; broke down scaffolding; infilled some small triangles for breezeway; moved boards to clear workspace | cch | mcel |
+
+Total: 77.0 | Invoiced: 2019-04-13 15:28:32.835046 | Payment due: 2019-04-15 17:00:00 | Gross $: 1540.0
+----
